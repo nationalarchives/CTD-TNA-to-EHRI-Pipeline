@@ -1,3 +1,5 @@
+''' Assumes a series.txt file in the active directory which contains a list of series to be processed (one on each line) and an output folder within the active directory.'''
+
 import requests
 from pathlib import Path
 from time import sleep
