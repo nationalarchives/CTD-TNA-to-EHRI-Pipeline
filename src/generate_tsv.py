@@ -4,9 +4,10 @@ import requests
 from pathlib import Path
 from time import sleep
 
+
 def get_records_from_api(series, results=[], batchmark="*"):
     '''Queries the Discovery API for all the records in a given series, in order, using recursion is there are multiple pages of records
-    
+    b
         Keyword arguments: 
             series - string with the reference of the series e.g. "PREM 8"
             results - list of existing results, default is empty list
