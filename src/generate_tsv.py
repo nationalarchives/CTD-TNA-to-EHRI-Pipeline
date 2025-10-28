@@ -4,6 +4,9 @@ import requests
 from pathlib import Path
 from time import sleep
 
+SERIES_PATH = Path(r"C:\Users\rbruno\OneDrive - The National Archives\Projects\EHRI\Data")
+SERIES_FILE = SERIES_PATH / "series.txt"
+
 
 def get_records_from_api(series, results=[], batchmark="*"):
     '''Queries the Discovery API for all the records in a given series, in order, using recursion is there are multiple pages of records
