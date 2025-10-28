@@ -10,37 +10,34 @@ SERIES_FILE = SERIES_PATH / "series.txt"
 DISCOVERY_API_URI = r"https://discovery.nationalarchives.gov.uk/API/"
 
 
-def get_records_from_api(series, results=[], batchmark="*"):
-    '''Queries the Discovery API for all the records in a given series, in order, using recursion is there are multiple pages of records
-    b
-        Keyword arguments: 
-            series - string with the reference of the series e.g. "PREM 8"
-            results - list of existing results, default is empty list
-            batchmark - string argument for use with the Discovery query. Specifies the start point of the results when querying multiple pages. Default is "*". 
-  
-        Output:
-            Returns list of results in json 
-    '''
-    url = f"{DISCOVERY_API_URI}search/records?sps.recordSeries={series}&sps.searchQuery=*&sps.sortByOption=REFERENCE_ASCENDING&sps.resultsPageSize=1000&sps.batchStartMark={batchmark}"   
-    res = requests.get(url)
-    
-    if res.status_code == 200:
-        data = res.json()
-            
-        new_results = data['records']
-        num_results = data['count']
-        next_batch_mark = data['nextBatchMark']
+def get_records_from_api(series: str) -> list[dict]:
+    """Queries the Discovery API for all the records in a given series, in order, 
+        uses nextBatchMark value to determine whether more records need to be retrieved. 
+
+    Args:
+        series (str): reference of the series e.g. "PREM 8"
+
+    Returns:
+        list[dict]: results in json
+    """    
+
+    batch_mark="*"
+    records = []
+    while batch_mark:
+        api_query = f"{DISCOVERY_API_URI}search/records?sps.recordSeries={series}&sps.searchQuery=*&sps.sortByOption=REFERENCE_ASCENDING&sps.resultsPageSize=1000&sps.batchStartMark={batch_mark}"   
+        result = requests.get(api_query)
+        if result.status_code != 200:
+            return
+
+        data = result.json()          
+        records.extend(data['records'])
+        batch_mark = data['nextBatchMark']
+        sleep(1)
         
-        print(f"Results for {series} retrieved with batchmark: {batchmark} with {len(new_results)} results.")
-        
-        if len(new_results) == 0:
-            return results
-        elif len(results) == 0 and num_results < 1000:
-            return new_results
-        else:
-            combined_results = results + new_results
-            sleep(1)
-            return get_records_from_api(series, combined_results, next_batch_mark)
+    print(f"Results for {series} retrieved with {len(records)} records.")
+
+    return records
+       
 
 def get_url_tsv(series):
     ''' For a given series, it queries the Discovery API, extracts the id and generates the tsv file for that series which can be copied and pasted into the EHRI portal for processing.
@@ -62,13 +59,12 @@ def get_url_tsv(series):
         
     series_file_name = series.replace(" ", "_")
 
-    with open(Path(SERIES_PATH / "output"/ f"{series_file_name}.tsv"), "w") as output:
+    with open(Path(SERIES_PATH / "output" / f"{series_file_name}.tsv"), "w") as output:
         output.write("\n".join(links))
 
 
 if __name__ == "__main__":
     ''' reads the series.txt file and takes the value on each line as a series and processes it '''
     with open(SERIES_FILE, "r") as input:
-        series = input.read().splitlines()
-        for ref in series:
+        for ref in input.read().splitlines():
             get_url_tsv(ref)
