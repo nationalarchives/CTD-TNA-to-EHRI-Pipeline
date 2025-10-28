@@ -1,8 +1,13 @@
-''' Assumes a series.txt file in the active directory which contains a list of series to be processed (one on each line) and an output folder within the active directory.'''
+"""
+Uses a series.txt file containing a list of series to be processed (one on each line)
+The location of the file can be set in an output directory which 
+and an output folder within the active directory.Returns:
 
+"""
 import requests
 from pathlib import Path
 from time import sleep
+
 
 SERIES_PATH = Path(r"C:\Users\rbruno\OneDrive - The National Archives\Projects\EHRI\Data")
 SERIES_FILE = SERIES_PATH / "series.txt"
@@ -76,7 +81,10 @@ def write_tsv(series: str, series_links: list) -> None:
     
 
 if __name__ == "__main__":
-    ''' reads the series.txt file and takes the value on each line as a series and processes it '''
+    if not Path(SERIES_PATH):
+        print("Invalid location for series.txt")
+        exit()
+        
     with open(SERIES_FILE, "r") as input:
         for series in input.read().splitlines():
             print(f"Series: {series}")
