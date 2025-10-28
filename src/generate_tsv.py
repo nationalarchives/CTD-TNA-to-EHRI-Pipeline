@@ -21,7 +21,7 @@ def get_records_from_api(series, results=[], batchmark="*"):
         Output:
             Returns list of results in json 
     '''
-    url = "https://discovery.nationalarchives.gov.uk/API/search/records?sps.recordSeries=" + series + "&sps.searchQuery=*&sps.sortByOption=REFERENCE_ASCENDING&sps.resultsPageSize=1000&sps.batchStartMark=" + batchmark   
+    url = f"{DISCOVERY_API_URI}search/records?sps.recordSeries={series}&sps.searchQuery=*&sps.sortByOption=REFERENCE_ASCENDING&sps.resultsPageSize=1000&sps.batchStartMark={batchmark}"   
     res = requests.get(url)
     
     if res.status_code == 200:
@@ -60,7 +60,7 @@ def get_url_tsv(series):
     links = []
     
     for record in json_results:
-        url = 'https://discovery.nationalarchives.gov.uk/API/records/v1/details/' + record["id"]
+        url = f"{DISCOVERY_API_URI}records/v1/details/{record['id']}"
         links.append(url + "\t" + record["id"])
         
     series_file_name = series.replace(" ", "_")
