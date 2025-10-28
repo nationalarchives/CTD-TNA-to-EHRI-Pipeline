@@ -64,8 +64,9 @@ def get_url_tsv(series):
         output.write("\n".join(links))
 
 
-''' reads the series.txt file and takes the value on each line as a series and processes it '''
-with open(Path("series.txt"), "r") as input:
-    series = input.read().splitlines()
-    for ref in series:
-        get_url_tsv(ref)
+if __name__ == "__main__":
+    ''' reads the series.txt file and takes the value on each line as a series and processes it '''
+    with open(Path("series.txt"), "r") as input:
+        series = input.read().splitlines()
+        for ref in series:
+            get_url_tsv(ref)
