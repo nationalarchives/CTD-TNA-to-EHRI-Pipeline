@@ -34,7 +34,7 @@ def get_records_from_api(series, results=[], batchmark="*"):
         num_results = data["count"]
         next_batch_mark = data["nextBatchMark"]
         
-        print("Results for " + series + " retrieved with batchmark: " + batchmark + " with " + str(len(new_results)) + " results.")
+        print(f"Results for {series} retrieved with batchmark: {batchmark} with {len(new_results)} results.")
         
         if len(new_results) == 0:
             return results
@@ -56,7 +56,7 @@ def get_url_tsv(series):
     '''
     
     json_results = get_records_from_api(series)
-    print("Total records found for " + series + ": " + str(len(json_results)))
+    print(f"Total records found for {series}: {len(json_results)}")
     links = []
     
     for record in json_results:
