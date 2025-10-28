@@ -26,9 +26,6 @@ def get_records_from_api(series, results=[], batchmark="*"):
     
     if res.status_code == 200:
         data = res.json()
-        
-        #with open(Path("output", series +".txt"), "w") as output:
-        #    output.write(str(data))
             
         new_results = data["records"]
         num_results = data["count"]
@@ -60,12 +57,12 @@ def get_url_tsv(series):
     links = []
     
     for record in json_results:
-        url = f"{DISCOVERY_API_URI}records/v1/details/{record['id']}"
-        links.append(url + "\t" + record["id"])
+        url = f"{DISCOVERY_API_URI}records/v1/details/{record["id"]}"
+        links.append(f'{url}\t{record["id"]}')
         
     series_file_name = series.replace(" ", "_")
 
-    with open(Path("output", series_file_name +".tsv"), "w") as output:
+    with open(Path(SERIES_PATH / series_file_name / ".tsv"), "w") as output:
         output.write("\n".join(links))
 
 
