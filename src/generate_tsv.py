@@ -62,7 +62,7 @@ def get_url_tsv(series):
         
     series_file_name = series.replace(" ", "_")
 
-    with open(Path(SERIES_PATH / series_file_name / ".tsv"), "w") as output:
+    with open(Path(SERIES_PATH / "output"/ f"{series_file_name}.tsv"), "w") as output:
         output.write("\n".join(links))
 
 
