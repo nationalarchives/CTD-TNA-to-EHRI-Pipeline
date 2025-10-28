@@ -35,7 +35,7 @@ def get_records_from_api(series: str) -> list[dict]:
         batch_mark = data['nextBatchMark']
         sleep(1)
         
-    print(f"Results for {series} retrieved with {len(records)} records.")
+    print(f"\tResult: {len(records)} records retrieved.")
 
     return records
        
@@ -72,12 +72,14 @@ def write_tsv(series: str, series_links: list) -> None:
 
     with open(SERIES_PATH / "output" / f"{series_file_name}.tsv", "w") as output:
         output.write("\n".join(series_links))
+        print(f"\tData output to {series_file_name}.tsv\n")
     
 
 if __name__ == "__main__":
     ''' reads the series.txt file and takes the value on each line as a series and processes it '''
     with open(SERIES_FILE, "r") as input:
         for series in input.read().splitlines():
+            print(f"Series: {series}")
             json_results = get_records_from_api(series)
             links = create_series_links(series, json_results)
             write_tsv(series, links)
