@@ -7,6 +7,8 @@ from time import sleep
 SERIES_PATH = Path(r"C:\Users\rbruno\OneDrive - The National Archives\Projects\EHRI\Data")
 SERIES_FILE = SERIES_PATH / "series.txt"
 
+DISCOVERY_API_URI = r"https://discovery.nationalarchives.gov.uk/API/"
+
 
 def get_records_from_api(series, results=[], batchmark="*"):
     '''Queries the Discovery API for all the records in a given series, in order, using recursion is there are multiple pages of records
@@ -69,7 +71,7 @@ def get_url_tsv(series):
 
 if __name__ == "__main__":
     ''' reads the series.txt file and takes the value on each line as a series and processes it '''
-    with open(Path("series.txt"), "r") as input:
+    with open(SERIES_FILE, "r") as input:
         series = input.read().splitlines()
         for ref in series:
             get_url_tsv(ref)
