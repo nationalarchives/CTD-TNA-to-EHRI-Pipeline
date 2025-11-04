@@ -36,34 +36,43 @@ def read_records_from_file(tna_file: Path) -> list[dict]:
     ]
 
 
-def get_records_from_api(series: str) -> list[dict]:
+def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]: 
     """
-    Queries the Discovery API for all the records in a given series, in order, 
-    uses nextBatchMark value to determine whether more records need to be retrieved. 
+    Uses list of records proposed for EHRI transfer and retrieves the full JSON records from Discovery.
+    The records are collated into smaller groups to ease EHRI import - each group will be transformed into one EAD XML
 
     Args:
-        series (str): reference of the series e.g. "PREM 8"
-
+        candidate_records (list[dict]): candidate records extracted from Excel
     Returns:
-        list[dict]: results in json
-    """    
-
-    batch_mark="*"
-    records = []
-    while batch_mark:
-        api_query = f"{DISCOVERY_API_URI}search/records?sps.recordSeries={series}&sps.searchQuery=*&sps.sortByOption=REFERENCE_ASCENDING&sps.resultsPageSize=1000&sps.batchStartMark={batch_mark}"   
+        records_out (list[list[dict]]): Discovery JSON records collated into smaller groups
+    """
+    records_out = []
+    records_group = []
+    for index, candidate in enumerate(candidate_records):
+        api_query = f"{DISCOVERY_API_URI}records/v1/details/{candidate['ID']}"
         result = requests.get(api_query)
-        if result.status_code != 200:
-            return
 
-        data = result.json()          
-        records.extend(data['records'])
-        batch_mark = data['nextBatchMark']
-        sleep(1)
+        if result.status_code == 204:
+            print(f"ERROR: Record not found - incorrect record ID {candidate['ID']}")
+            continue
         
-    print(f"\tResult: {len(records)} records retrieved.")
+        records_group.append(result.json())
 
-    return records
+        group_size = 10
+        reached_group_size = ((index + 1) % group_size == 0)
+        reached_end_of_records = (index == len(candidate_records) - 1)
+
+        if reached_group_size:
+            records_out.extend([records_group])
+            records_group = []
+            sleep(10)
+
+        elif reached_end_of_records:
+            records_out.extend([records_group])
+        
+    print(f"\tResult: {len(candidate_records)} records retrieved.")
+
+    return records_out
        
 
 def create_series_links(series: str, records_from_api: list[dict]) -> list[str]:
@@ -111,4 +120,5 @@ if __name__ == "__main__":
 
     for tna_file in Path(F"{SERIES_PATH}").glob("*.xlsx"):
         tna_records: list[dict] = read_records_from_file(tna_file)
-        pretty_output.pprint(tna_records)
+        records_for_EHRI = get_records_from_api(tna_records)
+        print(f"{len(records_for_EHRI)=}")
