@@ -10,7 +10,6 @@ from time import sleep
 
 
 SERIES_PATH = Path(r"C:\Users\rbruno\OneDrive - The National Archives\Projects\EHRI\Data")
-SERIES_FILE = SERIES_PATH / "series.txt"
 
 DISCOVERY_API_URI = r"https://discovery.nationalarchives.gov.uk/API/"
 
