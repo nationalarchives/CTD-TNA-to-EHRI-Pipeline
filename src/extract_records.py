@@ -8,10 +8,32 @@ import requests
 from pathlib import Path
 from time import sleep
 
+from xlreader import read_file
+
 
 SERIES_PATH = Path(r"C:\Users\rbruno\OneDrive - The National Archives\Projects\EHRI\Data")
 
 DISCOVERY_API_URI = r"https://discovery.nationalarchives.gov.uk/API/"
+
+
+def read_records_from_file(tna_file: Path) -> list[dict]:  
+    """reads data from file as a dictionary where each key, value refers to one sheet and its rows (a list of tuples) 
+    converts to a list of dictionaries, using the first row as the header
+
+    Args:
+        tna_file (Path): input Excel created by Archives Sector Leadership (at time of writing Caroline Catchpole)
+
+    Returns:
+        list[dict]: 
+    """
+    file_data = read_file(tna_file)
+    sheet_name = list(file_data.keys())[0]
+    data_rows = file_data[sheet_name]
+    return [
+        dict(zip(data_rows[0], row))
+        for row in data_rows[1:]
+        if row[1]
+    ]
 
 
 def get_records_from_api(series: str) -> list[dict]:
@@ -80,14 +102,13 @@ def write_tsv(series: str, series_links: list) -> None:
     
 
 if __name__ == "__main__":
+    import pprint
+
+    pretty_output = pprint.PrettyPrinter(indent=4)
     if not Path(SERIES_PATH):
         print("Invalid location for series.txt")
         exit()
 
-    with open(SERIES_FILE, "r") as input:
-        for series in input.read().splitlines():
-            print(f"Series: {series}")
-            json_results = get_records_from_api(series)
-            links = create_series_links(series, json_results)
-            write_tsv(series, links)
-            
+    for tna_file in Path(F"{SERIES_PATH}").glob("*.xlsx"):
+        tna_records: list[dict] = read_records_from_file(tna_file)
+        pretty_output.pprint(tna_records)
