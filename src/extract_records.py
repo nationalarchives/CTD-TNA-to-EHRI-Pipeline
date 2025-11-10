@@ -42,7 +42,7 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
     The records are collated into smaller groups to ease EHRI import - each group will be transformed into one EAD XML
 
     Args:
-        candidate_records (list[dict]): candidate records extracted from Excel
+        candidate_records (list[dict]): rows of data extracted from Excel
     Returns:
         records_out (list[list[dict]]): Discovery JSON records collated into smaller groups
     """
