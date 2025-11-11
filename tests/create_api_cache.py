@@ -5,8 +5,8 @@ import shelve
 from extract_records import read_records_from_file, get_records_from_api, SERIES_PATH
 
 test_data_files = [
-    Path(f"{SERIES_PATH}/TNA collections WO 311 German concentration camp staff_ready.xlsx"),
-    Path(f"{SERIES_PATH}/TNA collections FO 950 Nazi persecution records_ready.xlsx)")
+    Path(SERIES_PATH / "TNA collections WO 311 German concentration camp staff_ready.xlsx"),
+    Path(SERIES_PATH / "TNA collections FO 950 Nazi persecution records_ready.xlsx)")
     ]
 
 with shelve.open("api_cache.db") as shelf:
