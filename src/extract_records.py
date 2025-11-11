@@ -13,7 +13,7 @@ from xlreader import read_file
 
 SERIES_PATH = Path(r"C:\Users\rbruno\OneDrive - The National Archives\Projects\EHRI\Data")
 
-DISCOVERY_API_URI = r"https://discovery.nationalarchives.gov.uk/API/"
+DISCOVERY_API_URI = r"https://discovery.nationalarchives.gov.uk/API"
 
 
 def read_records_from_file(tna_file: Path) -> list[dict]:  
@@ -49,7 +49,7 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
     records_out = []
     records_group = []
     for index, candidate in enumerate(candidate_records):
-        api_query = f"{DISCOVERY_API_URI}records/v1/details/{candidate['ID']}"
+        api_query = f"{DISCOVERY_API_URI}/records/v1/details/{candidate['ID']}"
         result = requests.get(api_query)
 
         if result.status_code == 204:
