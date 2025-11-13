@@ -56,6 +56,7 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
             print(f"ERROR: Record not found - incorrect record ID {candidate['ID']}")
             continue
         
+        print(f"\tRetrieving record {index + 1} of {len(candidate_records)}: {candidate['ID']}")
         records_group.append(result.json())
 
         group_size = 1000
@@ -70,8 +71,6 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
         elif reached_end_of_records:
             records_out.extend([records_group])
         
-    print(f"\tResult: {len(candidate_records)} records retrieved.")
-
     return records_out
        
 
@@ -119,6 +118,6 @@ if __name__ == "__main__":
         exit()
 
     for tna_file in Path(F"{SERIES_PATH}").glob("*.xlsx"):
+        print(f"Processing file: {tna_file.name}")
         tna_records: list[dict] = read_records_from_file(tna_file)
         records_for_EHRI = get_records_from_api(tna_records)
-        print(f"{len(records_for_EHRI)=}")
