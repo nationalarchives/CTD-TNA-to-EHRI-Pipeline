@@ -65,7 +65,7 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
         if reached_group_size:
             records_out.extend([records_group])
             records_group = []
-            sleep(10)
+            sleep(2)
 
         elif reached_end_of_records:
             records_out.extend([records_group])
