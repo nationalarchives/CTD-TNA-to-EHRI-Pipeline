@@ -48,6 +48,7 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
     """
     records_out = []
     records_group = []
+    total_records_retrieved = 0
     for index, candidate in enumerate(candidate_records):
         api_query = f"{DISCOVERY_API_URI}/records/v1/details/{candidate['ID']}"
         result = requests.get(api_query)
@@ -58,6 +59,7 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
         
         print(f"\tRetrieving record {index + 1} of {len(candidate_records)}: {candidate['ID']}")
         records_group.append(result.json())
+        total_records_retrieved += 1
 
         group_size = 1000
         reached_group_size = ((index + 1) % group_size == 0)
@@ -70,6 +72,8 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
 
         elif reached_end_of_records:
             records_out.extend([records_group])
+
+    print(f"-> Total records retrieved: {total_records_retrieved}\n")
         
     return records_out
        
