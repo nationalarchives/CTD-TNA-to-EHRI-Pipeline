@@ -78,41 +78,6 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
     return records_out
        
 
-def create_series_links(series: str, records_from_api: list[dict]) -> list[str]:
-    """
-    Each record from the API is returned as a url along with the catalog id 
-    e.g., https://discovery.nationalarchives.gov.uk/API/records/v1/details/C9295	C9295
-    This is the format required for bulk import into EHRI portal
-
-    Args:
-        series (str): reference of the series e.g. "PREM 8" 
-        records_from_api (list[dict]): the json results from the api query
-
-    Returns:
-        list[str]: a list of urls with its record id
-    """    
-
-    return [
-        f"{DISCOVERY_API_URI}records/v1/details/{record['id']}\t{record['id']}"
-        for record in records_from_api
-    ]
-
-
-def write_tsv(series: str, series_links: list) -> None:
-    """
-    Write all the urls extractef from Discovery into a tsv-format file whgich will be used to bulk import into EHRI
-
-    Args:
-        series (str): reference of the series e.g. "PREM 8" 
-        series_links (list): a list of urls with its record id
-    """           
-    series_file_name = series.replace(" ", "_")
-
-    with open(SERIES_PATH / "output" / f"{series_file_name}.tsv", "w") as output:
-        output.write("\n".join(series_links))
-        print(f"\tData output to {series_file_name}.tsv\n")
-    
-
 if __name__ == "__main__":
     import pprint
 
