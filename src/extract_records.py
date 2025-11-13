@@ -58,7 +58,7 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
         
         records_group.append(result.json())
 
-        group_size = 10
+        group_size = 1000
         reached_group_size = ((index + 1) % group_size == 0)
         reached_end_of_records = (index == len(candidate_records) - 1)
 
