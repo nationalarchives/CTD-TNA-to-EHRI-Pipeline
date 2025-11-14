@@ -4,7 +4,7 @@ module for defining constants and constant namespaces.
 
 from pathlib import Path
 
-def DataFolders():
+class DataFolders():
     __slots__ = ()
 
     _root = Path(r"C:\Users\rbruno\OneDrive - The National Archives\Projects\EHRI\Data")
