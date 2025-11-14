@@ -162,4 +162,3 @@ cython_debug/
 #.idea/
 src/output/*.*
 tests/api_cache.db
-experiments/*.*
