@@ -78,14 +78,14 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
     page_of_records = []
     total_records_retrieved = 0
     for index, candidate in enumerate(candidate_records):
-        api_query = f"{DISCOVERY_API_URI}/records/v1/details/{candidate['ID']}"
+        api_query = f"{DISCOVERY_API_URI}/records/v1/details/{candidate['id']}"
         result = requests.get(api_query)
 
         if result.status_code == 204:
-            print(f"ERROR: Record not found - incorrect record ID {candidate['ID']}")
+            print(f"ERROR: Record not found - incorrect record ID {candidate['id']}")
             continue
         
-        print(f"\tRetrieving record {index + 1} of {len(candidate_records)}: {candidate['ID']}")
+        print(f"\tRetrieving record {index + 1} of {len(candidate_records)}: {candidate['id']}")
         page_of_records.append(result.json())
         total_records_retrieved += 1
 
@@ -119,3 +119,10 @@ if __name__ == "__main__":
             tna_records: list[dict] = read_records_from_file(tna_file)
             records_for_EHRI = get_records_from_api(tna_records)
             shelf[tna_file] = records_for_EHRI
+
+        for tna_file in Path(F"{DATA.INPUT}").glob("*.txt"):
+            print(f"Processing file: {tna_file.name}")
+            tna_records: list[dict] = read_records_from_file(tna_file)
+            records_for_EHRI = get_records_from_api(tna_records)
+            shelf[tna_file] = records_for_EHRI
+
