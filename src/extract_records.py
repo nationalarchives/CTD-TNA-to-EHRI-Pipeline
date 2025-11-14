@@ -15,6 +15,7 @@ SERIES_PATH = Path(r"C:\Users\rbruno\OneDrive - The National Archives\Projects\E
 
 DISCOVERY_API_URI = r"https://discovery.nationalarchives.gov.uk/API"
 PAUSE_IN_SECONDS = 2
+PAGE_SIZE = 1000
 
 
 def get_series_from_api(series: str) -> list[dict]:
@@ -32,7 +33,7 @@ def get_series_from_api(series: str) -> list[dict]:
     batch_mark="*"
     records = []
     while batch_mark:
-        api_query = f"{DISCOVERY_API_URI}/search/records?sps.recordSeries={series}&sps.searchQuery=*&sps.sortByOption=REFERENCE_ASCENDING&sps.resultsPageSize=1000&sps.batchStartMark={batch_mark}"   
+        api_query = f"{DISCOVERY_API_URI}/search/records?sps.recordSeries={series}&sps.searchQuery=*&sps.sortByOption=REFERENCE_ASCENDING&sps.resultsPageSize={PAGE_SIZE}&sps.batchStartMark={batch_mark}"   
         result = requests.get(api_query)
         if result.status_code != 200:
             return
