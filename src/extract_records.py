@@ -71,10 +71,10 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
     Args:
         candidate_records (list[dict]): rows of data extracted from Excel
     Returns:
-        records_out (list[list[dict]]): Discovery JSON records collated into smaller groups
+        records_retrieved (list[list[dict]]): Discovery JSON records collated into smaller groups
     """
-    records_out = []
-    reached_page = []
+    records_retrieved = []
+    new_page = []
     total_records_retrieved = 0
     for index, candidate in enumerate(candidate_records):
         api_query = f"{DISCOVERY_API_URI}/records/v1/details/{candidate['ID']}"
@@ -85,23 +85,23 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
             continue
         
         print(f"\tRetrieving record {index + 1} of {len(candidate_records)}: {candidate['ID']}")
-        reached_page.append(result.json())
+        new_page.append(result.json())
         total_records_retrieved += 1
 
-        reached_page_size = ((index + 1) % PAGE_SIZE == 0)
+        reached_end_of_page = ((index + 1) % PAGE_SIZE == 0)
         reached_end_of_records = (index == len(candidate_records) - 1)
 
-        if reached_page_size:
-            records_out.extend([reached_page])
-            reached_page = []
+        if reached_end_of_page:
+            records_retrieved.extend([new_page])
+            new_page = []
             sleep(PAUSE_IN_SECONDS)
 
         elif reached_end_of_records:
-            records_out.extend([reached_page])
+            records_retrieved.extend([new_page])
 
     print(f"-> Total records retrieved: {total_records_retrieved}\n")
         
-    return records_out
+    return records_retrieved
        
 
 if __name__ == "__main__":
