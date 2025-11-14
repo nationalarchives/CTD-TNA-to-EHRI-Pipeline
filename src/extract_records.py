@@ -7,6 +7,7 @@ This will extract sets of individual records from Discovery and save them for la
 import requests
 from pathlib import Path
 from time import sleep
+import shelve
 
 from xlreader import read_file
 
@@ -112,7 +113,9 @@ if __name__ == "__main__":
         print("Invalid location for series.txt")
         exit()
 
-    for tna_file in Path(F"{DATA.INPUT}").glob("*.xlsx"):
-        print(f"Processing file: {tna_file.name}")
-        tna_records: list[dict] = read_records_from_file(tna_file)
-        records_for_EHRI = get_records_from_api(tna_records)
+    with shelve.open(f"{DATA.CACHE}") as shelf:
+        for tna_file in Path(F"{DATA.INPUT}").glob("*.xlsx"):
+            print(f"Processing file: {tna_file.name}")
+            tna_records: list[dict] = read_records_from_file(tna_file)
+            records_for_EHRI = get_records_from_api(tna_records)
+            shelf[tna_file] = records_for_EHRI
