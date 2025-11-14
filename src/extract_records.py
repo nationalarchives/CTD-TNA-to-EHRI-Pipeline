@@ -16,6 +16,36 @@ SERIES_PATH = Path(r"C:\Users\rbruno\OneDrive - The National Archives\Projects\E
 DISCOVERY_API_URI = r"https://discovery.nationalarchives.gov.uk/API"
 
 
+def get_series_from_api(series: str) -> list[dict]:
+    """
+    Queries the Discovery API for all the records in the given series, in order, 
+    uses nextBatchMark value to determine whether more records need to be retrieved. 
+
+    Args:
+        series (str): reference of the series e.g. "PREM 8"
+
+    Returns:
+        list[dict]: results in json
+    """    
+
+    batch_mark="*"
+    records = []
+    while batch_mark:
+        api_query = f"{DISCOVERY_API_URI}search/records?sps.recordSeries={series}&sps.searchQuery=*&sps.sortByOption=REFERENCE_ASCENDING&sps.resultsPageSize=1000&sps.batchStartMark={batch_mark}"   
+        result = requests.get(api_query)
+        if result.status_code != 200:
+            return
+
+        data = result.json()          
+        records.extend(data['records'])
+        batch_mark = data['nextBatchMark']
+        sleep(2)
+        
+    print(f"\tResult: {len(records)} records retrieved.")
+
+    return records
+       
+
 def read_records_from_file(tna_file: Path) -> list[dict]:  
     """reads data from file as a dictionary where each key, value refers to one sheet and its rows (a list of tuples) 
     converts to a list of dictionaries, using the first row as the header
