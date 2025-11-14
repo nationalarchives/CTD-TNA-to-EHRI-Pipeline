@@ -118,10 +118,15 @@ if __name__ == "__main__":
             if tna_file.suffix() == ".xlsx":
                 print(f"Processing file: {tna_file.name}")
                 tna_records: list[dict] = read_records_from_file(tna_file)
+
             elif tna_file.suffix() == ".txt":           
                 print(f"Processing file: {tna_file.name}")
                 tna_records: list[dict] = get_series_from_api(tna_file)
+
             else:
                 print(f"{tna_file.name} must be xlsx or txt")
                 continue
+
+            records_for_EHRI = get_records_from_api(tna_records)
+            shelf[tna_file.name] = records_for_EHRI
 
