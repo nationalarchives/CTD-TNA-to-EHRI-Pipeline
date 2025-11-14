@@ -44,17 +44,18 @@ def get_series_from_api(series: str) -> list[dict]:
     return records
        
 
-def read_records_from_file(tna_file: Path) -> list[dict]:  
-    """reads data from file as a dictionary where each key, value refers to one sheet and its rows (a list of tuples) 
-    converts to a list of dictionaries, using the first row as the header
+def read_records_from_file(excel_file: Path) -> list[dict]:  
+    """
+    Reads data from file as a dictionary where each {key, value} refers to one sheet and its rows (a list of tuples) 
+    Returns a list of dictionaries, using the first row as the header
 
     Args:
-        tna_file (Path): input Excel created by Archives Sector Leadership (at time of writing Caroline Catchpole)
+        excel_file (Path):
 
     Returns:
         list[dict]: 
     """
-    file_data = read_file(tna_file)
+    file_data = read_file(excel_file)
     sheet_name = list(file_data.keys())[0]
     data_rows = file_data[sheet_name]
     return [
@@ -114,19 +115,19 @@ if __name__ == "__main__":
         exit()
 
     with shelve.open(f"{DATA.CACHE}") as shelf:
-        for tna_file in Path(F"{DATA.INPUT}").glob("*.*"):
-            if tna_file.suffix() == ".xlsx":
-                print(f"Processing file: {tna_file.name}")
-                tna_records: list[dict] = read_records_from_file(tna_file)
+        for search_file in Path(F"{DATA.INPUT}").glob("*.*"):
+            if search_file.suffix() == ".xlsx":
+                print(f"Processing file: {search_file.name}")
+                Discovery_records: list[dict] = read_records_from_file(search_file)
 
-            elif tna_file.suffix() == ".txt":           
-                print(f"Processing file: {tna_file.name}")
-                tna_records: list[dict] = get_series_from_api(tna_file)
+            elif search_file.suffix() == ".txt":           
+                print(f"Processing file: {search_file.name}")
+                Discovery_records: list[dict] = get_series_from_api(search_file.stem)
 
             else:
-                print(f"{tna_file.name} must be xlsx or txt")
+                print(f"{search_file.name} must be xlsx or txt")
                 continue
 
-            records_for_EHRI = get_records_from_api(tna_records)
-            shelf[tna_file.name] = records_for_EHRI
+            records_for_EHRI: list[dict] = get_records_from_api(Discovery_records)
+            shelf[search_file.name] = records_for_EHRI
 
