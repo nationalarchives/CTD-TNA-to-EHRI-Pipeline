@@ -10,12 +10,7 @@ from time import sleep
 
 from xlreader import read_file
 
-
-SERIES_PATH = Path(r"C:\Users\rbruno\OneDrive - The National Archives\Projects\EHRI\Data")
-
-DISCOVERY_API_URI = r"https://discovery.nationalarchives.gov.uk/API"
-PAUSE_IN_SECONDS = 2
-PAGE_SIZE = 1000
+from constants import DISCOVERY_API_URI, PAUSE_IN_SECONDS, PAGE_SIZE, DATA
 
 
 def get_series_from_api(series: str) -> list[dict]:
@@ -113,11 +108,11 @@ if __name__ == "__main__":
     import pprint
 
     pretty_output = pprint.PrettyPrinter(indent=4)
-    if not Path(SERIES_PATH):
+    if not Path(DATA.INPUT):
         print("Invalid location for series.txt")
         exit()
 
-    for tna_file in Path(F"{SERIES_PATH}").glob("*.xlsx"):
+    for tna_file in Path(F"{DATA.INPUT}").glob("*.xlsx"):
         print(f"Processing file: {tna_file.name}")
         tna_records: list[dict] = read_records_from_file(tna_file)
         records_for_EHRI = get_records_from_api(tna_records)
