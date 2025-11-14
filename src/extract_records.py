@@ -114,7 +114,7 @@ if __name__ == "__main__":
         print("Invalid location for series.txt")
         exit()
 
-    with shelve.open(f"{DATA.CACHE}") as shelf:
+    with shelve.open(DATA.CACHE, "c") as shelf:
         for search_file in Path(F"{DATA.INPUT}").glob("*.*"):
             if search_file.suffix == ".xlsx":
                 print(f"Processing file: {search_file.name}")
