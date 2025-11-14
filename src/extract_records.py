@@ -116,11 +116,11 @@ if __name__ == "__main__":
 
     with shelve.open(f"{DATA.CACHE}") as shelf:
         for search_file in Path(F"{DATA.INPUT}").glob("*.*"):
-            if search_file.suffix() == ".xlsx":
+            if search_file.suffix == ".xlsx":
                 print(f"Processing file: {search_file.name}")
                 Discovery_records: list[dict] = read_records_from_file(search_file)
 
-            elif search_file.suffix() == ".txt":           
+            elif search_file.suffix == ".txt":           
                 print(f"Processing file: {search_file.name}")
                 Discovery_records: list[dict] = get_series_from_api(search_file.stem)
 
