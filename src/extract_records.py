@@ -31,7 +31,7 @@ def get_series_from_api(series: str) -> list[dict]:
     batch_mark="*"
     records = []
     while batch_mark:
-        api_query = f"{DISCOVERY_API_URI}search/records?sps.recordSeries={series}&sps.searchQuery=*&sps.sortByOption=REFERENCE_ASCENDING&sps.resultsPageSize=1000&sps.batchStartMark={batch_mark}"   
+        api_query = f"{DISCOVERY_API_URI}/search/records?sps.recordSeries={series}&sps.searchQuery=*&sps.sortByOption=REFERENCE_ASCENDING&sps.resultsPageSize=1000&sps.batchStartMark={batch_mark}"   
         result = requests.get(api_query)
         if result.status_code != 200:
             return
