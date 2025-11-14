@@ -79,7 +79,7 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
         records_out (list[list[dict]]): Discovery JSON records collated into smaller groups
     """
     records_out = []
-    records_group = []
+    reached_page = []
     total_records_retrieved = 0
     for index, candidate in enumerate(candidate_records):
         api_query = f"{DISCOVERY_API_URI}/records/v1/details/{candidate['ID']}"
@@ -90,20 +90,19 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
             continue
         
         print(f"\tRetrieving record {index + 1} of {len(candidate_records)}: {candidate['ID']}")
-        records_group.append(result.json())
+        reached_page.append(result.json())
         total_records_retrieved += 1
 
-        group_size = 1000
-        reached_group_size = ((index + 1) % group_size == 0)
+        reached_page_size = ((index + 1) % PAGE_SIZE == 0)
         reached_end_of_records = (index == len(candidate_records) - 1)
 
-        if reached_group_size:
-            records_out.extend([records_group])
-            records_group = []
+        if reached_page_size:
+            records_out.extend([reached_page])
+            reached_page = []
             sleep(PAUSE_IN_SECONDS)
 
         elif reached_end_of_records:
-            records_out.extend([records_group])
+            records_out.extend([reached_page])
 
     print(f"-> Total records retrieved: {total_records_retrieved}\n")
         
