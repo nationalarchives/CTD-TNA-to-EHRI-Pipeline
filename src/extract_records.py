@@ -14,6 +14,7 @@ from xlreader import read_file
 SERIES_PATH = Path(r"C:\Users\rbruno\OneDrive - The National Archives\Projects\EHRI\Data")
 
 DISCOVERY_API_URI = r"https://discovery.nationalarchives.gov.uk/API"
+PAUSE_IN_SECONDS = 2
 
 
 def get_series_from_api(series: str) -> list[dict]:
@@ -39,7 +40,7 @@ def get_series_from_api(series: str) -> list[dict]:
         data = result.json()          
         records.extend(data['records'])
         batch_mark = data['nextBatchMark']
-        sleep(2)
+        sleep(PAUSE_IN_SECONDS)
         
     print(f"\tResult: {len(records)} records retrieved.")
 
@@ -98,7 +99,7 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
         if reached_group_size:
             records_out.extend([records_group])
             records_group = []
-            sleep(2)
+            sleep(PAUSE_IN_SECONDS)
 
         elif reached_end_of_records:
             records_out.extend([records_group])
