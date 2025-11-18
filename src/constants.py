@@ -7,7 +7,7 @@ from pathlib import Path
 class DataFolders():
     __slots__ = ()
 
-    _root = Path(r"C:\Users\rbruno\OneDrive - The National Archives\Projects\EHRI\Data")
+    _root = Path(r"C:\Users\rbruno\OneDrive - The National Archives\Projects\EHRI\Data\Pipeline")
     INPUT = _root / "1-INPUT"
     CACHE = _root / "2-CACHE/api_records.db"
     TRANSFORM = _root / "3-TRANSFORM"
