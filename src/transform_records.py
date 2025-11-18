@@ -37,26 +37,27 @@ def transform_record_to_ead(record: dict) -> dict:
                 'did': {
                     'unitid': {
                         'label': "Reference Code",
-                        'encodinganalog': 311,
+                        'encodinganalog': "3.1.1",
                         'id': record['id'],
                         '#text': record['citableReference']
                     },
                     'unittitle': {
-                        'encodinganalog': 312,
+                        'encodinganalog': "3.1.2",
                         '#text': record['title']
                     },
                     'unitdate': {
+                        'encodinganalog': "3.1.2",
                         'normal': f"{record['coveringFromDate']}/{record['coveringToDate']}",
                         '#text': record['coveringDates']
                     },
                     'origination': {
-                        'encodinganalog': 321,
+                        'encodinganalog': "3.2.1",
                         'persname' : "",
                         '#text': record['creatorName'][0]['xReferenceName']
                     },
                     'physdesc': {
+                        'encodinganalog': "3.1.5",
                         'label': 'extent',
-                        'encodinganalog': 315,
                         'extent': {},
                         'genreform': record['physicalDescription']
                     },
@@ -67,22 +68,22 @@ def transform_record_to_ead(record: dict) -> dict:
                         'language': record['publicationNote'][0]
                     },
                     'materialspec': {
-                        'label': 'Web Source',
-                        'encodinganalog': 315,
+                        'encodinganalog': "3.1.5",
+                        'label': "Web Source",
                         'extptr': f"https://discovery.nationalarchives.gov.uk/details/r/{record['id']}",
                         'genreform': record['physicalDescription']
                     }
                 },
                 'scopecontent': {
-                    'encodinganalog': 331,
+                    'encodinganalog': "3.3.1",
                     'p': record['scopeContent']['description']
                 },
                 'accessrestrict': {
-                    'encodinganalog': 331,
+                    'encodinganalog': "3.3.1",
                     'p': record['accessConditions']
                 },
                 'relatedmaterial': {
-                    'encodinganalog': 353,
+                    'encodinganalog': "3.5.3",
                     '#text': record['detailedRelatedMaterial'][0]['description']
                 }
             }
