@@ -12,6 +12,7 @@ class DataFolders():
     CACHE = _root / "2-CACHE/TNA_records_lineage.db"
     TRANSFORM = _root / "3-TRANSFORM"
     ARCHIVE = _root / "4-ARCHIVE"
+    OUTPUT = _root / "5-OUTPUT"
 
 
 DATA = DataFolders()
