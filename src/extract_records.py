@@ -24,7 +24,17 @@ def get_api_record(record_id: str) -> dict | None:
     if result.status_code == 204:
         print(f"ERROR: Record not found - incorrect record ID {record_id}")
         return
-    return result.json()
+
+    record = result.json()
+    print(f"\t\tAPI Record retrieved: {record_id}")
+    return record
+
+
+def get_record_from_local_cache(local_cache: dict, record_id: str) -> dict | None:
+    if local_record := [record for record in local_cache['shelf'][local_cache['filename']] if record['id'] == record_id]:
+        print(f"\t\tLOCAL record retrieved: {record_id}")
+        return local_record[0]
+    return
 
 
 def get_series_from_api(series: str) -> list[dict]:
