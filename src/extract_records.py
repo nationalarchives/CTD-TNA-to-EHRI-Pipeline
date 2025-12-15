@@ -85,14 +85,12 @@ def get_record_ids_from_api_with_catalogue_lineage(candidate_records: list[dict]
         lineage = []
         record_id = candidate['id'] if 'id' in candidate else candidate['ID']
         while True:
-            lineage.append(record_id)
-            api_query = f"{DISCOVERY_API_URI}/records/v1/details/{record_id}"
-            result = requests.get(api_query)
-            if result.status_code != 200:
+            if record := get_api_record(record_id):
+                lineage.append(record_id)
+            else:
                 continue
-            num_records += 1
 
-            record = result.json()
+            num_records += 1
             if record['catalogueLevel'] == 1:
                 break
 
@@ -122,16 +120,13 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
     total_records_retrieved = 0
     for index, candidate in enumerate(candidate_records):
         record_id = candidate['id'] if 'id' in candidate else candidate['ID']
-        api_query = f"{DISCOVERY_API_URI}/records/v1/details/{record_id}"
-        result = requests.get(api_query)
-
-        if result.status_code == 204:
-            print(f"ERROR: Record not found - incorrect record ID {record_id}")
-            continue
         
-        print(f"\tRetrieving record {index + 1} of {len(candidate_records)}: {record_id}")
-        page_of_records.append(result.json())
-        total_records_retrieved += 1
+        if record := get_api_record(record_id):
+            print(f"\tRetrieving record {index + 1} of {len(candidate_records)}: {record_id}")
+            page_of_records.append(record)
+            total_records_retrieved += 1
+        else:
+            continue
 
         reached_end_of_page = ((index + 1) % PAGE_SIZE == 0)
         reached_end_of_records = (index == len(candidate_records) - 1)
