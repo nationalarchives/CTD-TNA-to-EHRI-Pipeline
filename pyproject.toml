@@ -8,6 +8,7 @@ dependencies = [
     "openpyxl>=3.1.5",
     "pip-system-certs>=5.3",
     "requests>=2.32.5",
+    "treelib>=1.8.0",
     "xlutils>=2.0.0",
 ]
 
