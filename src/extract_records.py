@@ -73,7 +73,7 @@ def get_record_ids_from_api_with_catalogue_lineage(candidate_records: list[dict]
     print("Retrieving record lineage:")
     for candidate in candidate_records:
         lineage = []
-        record_id = candidate['id']
+        record_id = candidate['id'] if 'id' in candidate else candidate['ID']
         while True:
             lineage.append(record_id)
             api_query = f"{DISCOVERY_API_URI}/records/v1/details/{record_id}"
@@ -111,14 +111,15 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
     page_of_records = []
     total_records_retrieved = 0
     for index, candidate in enumerate(candidate_records):
-        api_query = f"{DISCOVERY_API_URI}/records/v1/details/{candidate['id']}"
+        candidate_id = candidate['id'] if 'id' in candidate else candidate['ID']
+        api_query = f"{DISCOVERY_API_URI}/records/v1/details/{candidate_id}"
         result = requests.get(api_query)
 
         if result.status_code == 204:
-            print(f"ERROR: Record not found - incorrect record ID {candidate['id']}")
+            print(f"ERROR: Record not found - incorrect record ID {candidate_id}")
             continue
         
-        print(f"\tRetrieving record {index + 1} of {len(candidate_records)}: {candidate['id']}")
+        print(f"\tRetrieving record {index + 1} of {len(candidate_records)}: {candidate_id}")
         page_of_records.append(result.json())
         total_records_retrieved += 1
 
