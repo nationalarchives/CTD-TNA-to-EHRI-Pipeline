@@ -8,6 +8,7 @@ import requests
 from pathlib import Path
 from time import sleep
 import shelve
+from treelib import Tree
 
 from xlreader import read_file
 
@@ -135,6 +136,15 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
         
     return records_retrieved
        
+
+def create_record_lineage_tree(tree, lineage_items: list[list[str]]) -> None:
+
+    for lineage in lineage_items:
+        for index, record_id in enumerate(lineage):
+            current_parent = lineage[index - 1] if index > 0 else "root"
+            if record_id not in tree:
+                tree.create_node(record_id, record_id, parent=current_parent)
+
 
 if __name__ == "__main__":
     import pprint
