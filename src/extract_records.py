@@ -9,6 +9,7 @@ from pathlib import Path
 from time import sleep
 import shelve
 from treelib import Tree
+import shutil
 
 from xlreader import read_file
 
@@ -181,6 +182,8 @@ if __name__ == "__main__":
             # records_for_EHRI: list[dict] = get_records_from_api(Discovery_records)
             individual_records_with_lineage: list[list[str]] = get_record_ids_from_api_with_catalogue_lineage(Discovery_records)
             TNA_taxonomy = create_record_lineage_tree(TNA_taxonomy, individual_records_with_lineage)
+
+            shutil.move(search_file, DATA.ARCHIVE / search_file.name)
 
     shelf['TNA taxonomy'] = TNA_taxonomy
     TNA_taxonomy.show() 
