@@ -201,7 +201,8 @@ if __name__ == "__main__":
                 shelf[search_file.name] = []
 
             # records_for_EHRI: list[dict] = get_records_from_api(Discovery_records)
-            individual_records_with_lineage: list[list[str]] = get_record_ids_from_api_with_catalogue_lineage(Discovery_records)
+            local_records_cache: dict = {'shelf': shelf, 'filename': search_file.name}
+            individual_records_with_lineage: list[list[str]] = get_record_ids_from_api_with_catalogue_lineage(Discovery_records, local_records_cache)
             add_record_ids_to_taxonomy(TNA_taxonomy, individual_records_with_lineage)
 
             shutil.move(search_file, DATA.ARCHIVE / search_file.name)
