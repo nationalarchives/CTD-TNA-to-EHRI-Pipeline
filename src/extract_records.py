@@ -194,7 +194,8 @@ if __name__ == "__main__":
                 print(f"{search_file.name} must be xlsx or txt")
                 continue
 
-            shelf[search_file.name] = []
+            if search_file.name not in shelf:
+                shelf[search_file.name] = []
 
             # records_for_EHRI: list[dict] = get_records_from_api(Discovery_records)
             individual_records_with_lineage: list[list[str]] = get_record_ids_from_api_with_catalogue_lineage(Discovery_records)
