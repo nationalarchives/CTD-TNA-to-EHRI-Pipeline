@@ -155,12 +155,12 @@ if __name__ == "__main__":
         exit()
 
     with shelve.open(DATA.CACHE, "c") as shelf:
-        if 'Discovery taxonomy' not in shelf:
-            tree = Tree()
-            tree.create_node("TNA Catalogue", "root") 
-            shelf['Discovery taxonomy'] = tree
+        if 'TNA taxonomy' not in shelf:
+            TNA_taxonomy = Tree()
+            TNA_taxonomy.create_node("TNA Catalogue", "root") 
+            shelf['TNA taxonomy'] = TNA_taxonomy
         else:
-            tree = shelf['Discovery taxonomy']
+            TNA_taxonomy = shelf['TNA taxonomy']
 
         for search_file in Path(F"{DATA.INPUT}").glob("*.*"):
             if search_file.suffix == ".xlsx":
