@@ -65,6 +65,36 @@ def read_records_from_file(excel_file: Path) -> list[dict]:
     ]
 
 
+def get_record_ids_from_api_with_catalogue_lineage(candidate_records: list[dict]) -> list[list[str]]:
+    records_by_lineage = []
+    num_records = 0
+    print("Retrieving record lineage:")
+    for candidate in candidate_records:
+        lineage = []
+        record_id = candidate['id']
+        while True:
+            lineage.append(record_id)
+            api_query = f"{DISCOVERY_API_URI}/records/v1/details/{record_id}"
+            result = requests.get(api_query)
+            if result.status_code != 200:
+                continue
+            num_records += 1
+
+            record = result.json()
+            if record['catalogueLevel'] == 1:
+                break
+
+            record_id = record['parentId']
+
+        sleep(PAUSE_IN_SECONDS)
+        print(f"\tLineage for candidate {candidate['id']}: {lineage[1:]}")
+        records_by_lineage.append(lineage[::-1])  # reverse order to have top-level first
+        
+    print(f"\tTotal records retrieved: {num_records}\n")
+    
+    return records_by_lineage
+
+
 def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]: 
     """
     Uses list of records proposed for EHRI transfer and retrieves the full JSON records from Discovery.
