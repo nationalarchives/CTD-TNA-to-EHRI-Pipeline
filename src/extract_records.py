@@ -124,7 +124,7 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
         reached_end_of_page = ((index + 1) % PAGE_SIZE == 0)
         reached_end_of_records = (index == len(candidate_records) - 1)
 
-        if reached_end_of_page:
+        if reached_end_of_page: 
             records_retrieved.extend([page_of_records])
             page_of_records = []
             sleep(PAUSE_IN_SECONDS)
@@ -156,6 +156,7 @@ if __name__ == "__main__":
         print("Invalid location for series.txt")
         exit()
 
+
     with shelve.open(DATA.CACHE, "c") as shelf:
         if 'TNA taxonomy' not in shelf:
             TNA_taxonomy = Tree()
@@ -177,6 +178,12 @@ if __name__ == "__main__":
                 print(f"{search_file.name} must be xlsx or txt")
                 continue
 
-            records_for_EHRI: list[dict] = get_records_from_api(Discovery_records)
-            shelf[search_file.name] = records_for_EHRI
+            # records_for_EHRI: list[dict] = get_records_from_api(Discovery_records)
+            individual_records_with_lineage: list[list[str]] = get_record_ids_from_api_with_catalogue_lineage(Discovery_records)
+            TNA_taxonomy = create_record_lineage_tree(TNA_taxonomy, individual_records_with_lineage)
+
+    shelf['TNA taxonomy'] = TNA_taxonomy
+    TNA_taxonomy.show() 
+    
+    print("Processing complete.")
 
