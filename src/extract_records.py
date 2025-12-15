@@ -88,7 +88,7 @@ def read_records_from_file(excel_file: Path) -> list[dict]:
     ]
 
 
-def get_record_ids_from_api_with_catalogue_lineage(candidate_records: list[dict]) -> list[list[str]]:
+def get_record_ids_from_api_with_catalogue_lineage(candidate_records: list[dict], local_cache: dict) -> list[list[str]]:
     records_by_lineage = []
     num_records = 0
     print("Retrieving record lineage:")
@@ -96,8 +96,11 @@ def get_record_ids_from_api_with_catalogue_lineage(candidate_records: list[dict]
         lineage = []
         record_id = candidate['id'] if 'id' in candidate else candidate['ID']
         while True:
-            if record := get_api_record(record_id):
+            if record := get_record_from_local_cache(local_cache, record_id):
                 lineage.append(record_id)
+            elif record := get_api_record(record_id):
+                lineage.append(record_id)
+                local_cache['shelf'][local_cache['filename']].append(record)
             else:
                 continue
 
@@ -108,7 +111,7 @@ def get_record_ids_from_api_with_catalogue_lineage(candidate_records: list[dict]
             record_id = record['parentId']
 
         sleep(PAUSE_IN_SECONDS)
-        print(f"\tLineage for candidate {candidate['id']}: {lineage[1:]}")
+        print(f"\tLineage for candidate {lineage[0]}: {lineage[1:]}")
         records_by_lineage.append(lineage[::-1])  # reverse order to have top-level first
         
     print(f"\tTotal records retrieved: {num_records}\n")
