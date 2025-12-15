@@ -137,13 +137,15 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
     return records_retrieved
        
 
-def create_record_lineage_tree(taxonomy: Tree, lineage_items: list[list[str]]) -> None:
+def create_record_lineage_tree(taxonomy: Tree, lineage_items: list[list[str]]) -> Tree:
 
     for lineage in lineage_items:
         for index, record_id in enumerate(lineage):
             current_parent = lineage[index - 1] if index > 0 else "root"
             if record_id not in taxonomy:
                 taxonomy.create_node(record_id, record_id, parent=current_parent)
+    
+    return taxonomy
 
 
 if __name__ == "__main__":
