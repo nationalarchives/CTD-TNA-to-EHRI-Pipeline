@@ -207,7 +207,8 @@ if __name__ == "__main__":
 
             shutil.move(search_file, DATA.ARCHIVE / search_file.name)
 
-    shelf['TNA taxonomy'] = TNA_taxonomy
+        shelf['TNA taxonomy'] = TNA_taxonomy
+
     TNA_taxonomy.show() 
     
     print("Processing complete.")
