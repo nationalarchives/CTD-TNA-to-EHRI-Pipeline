@@ -26,6 +26,7 @@ def get_api_record(record_id: str) -> dict | None:
         return
     return result.json()
 
+
 def get_series_from_api(series: str) -> list[dict]:
     """
     Queries the Discovery API for all the records in the given series, in order, 
@@ -144,7 +145,7 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
     return records_retrieved
        
 
-def create_record_lineage_tree(taxonomy: Tree, lineage_items: list[list[str]]) -> Tree:
+def add_record_ids_to_taxonomy(taxonomy: Tree, lineage_items: list[list[str]]) -> Tree:
 
     for lineage in lineage_items:
         for index, record_id in enumerate(lineage):
@@ -185,9 +186,11 @@ if __name__ == "__main__":
                 print(f"{search_file.name} must be xlsx or txt")
                 continue
 
+            shelf[search_file.name] = []
+
             # records_for_EHRI: list[dict] = get_records_from_api(Discovery_records)
             individual_records_with_lineage: list[list[str]] = get_record_ids_from_api_with_catalogue_lineage(Discovery_records)
-            TNA_taxonomy = create_record_lineage_tree(TNA_taxonomy, individual_records_with_lineage)
+            TNA_taxonomy = add_record_ids_to_taxonomy(TNA_taxonomy, individual_records_with_lineage)
 
             shutil.move(search_file, DATA.ARCHIVE / search_file.name)
 
