@@ -10,11 +10,21 @@ from time import sleep
 import shelve
 from treelib import Tree
 import shutil
+from functools import lru_cache
 
 from xlreader import read_file
 
 from constants import DISCOVERY_API_URI, PAUSE_IN_SECONDS, PAGE_SIZE, DATA
 
+
+@lru_cache
+def get_api_record(record_id: str) -> dict | None:
+    api_query = f"{DISCOVERY_API_URI}/records/v1/details/{record_id}"
+    result = requests.get(api_query)
+    if result.status_code == 204:
+        print(f"ERROR: Record not found - incorrect record ID {record_id}")
+        return
+    return result.json()
 
 def get_series_from_api(series: str) -> list[dict]:
     """
