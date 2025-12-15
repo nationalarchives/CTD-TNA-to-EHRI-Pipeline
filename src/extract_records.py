@@ -145,7 +145,7 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
     return records_retrieved
        
 
-def add_record_ids_to_taxonomy(taxonomy: Tree, lineage_items: list[list[str]]) -> Tree:
+def add_record_ids_to_taxonomy(taxonomy: Tree, lineage_items: list[list[str]]) -> None:
 
     for lineage in lineage_items:
         for index, record_id in enumerate(lineage):
@@ -153,8 +153,6 @@ def add_record_ids_to_taxonomy(taxonomy: Tree, lineage_items: list[list[str]]) -
             if record_id not in taxonomy:
                 taxonomy.create_node(record_id, record_id, parent=current_parent)
     
-    return taxonomy
-
 
 if __name__ == "__main__":
     import pprint
