@@ -202,14 +202,14 @@ if __name__ == "__main__":
 
     with shelve.open(DATA.CACHE, "c") as shelf:
         TNA_taxonomy = shelf['taxonomy']
-        TNA_records = shelf['records']
+        # TNA_records = shelf['records']
 
         for search_file in Path(F"{DATA.INPUT}").glob("*.*"):
             if not (Discovery_records := load_data_from_search_file(search_file)):
                 print(f"{search_file.name} must be xlsx or txt")
                 continue
 
-            records = TNA_records.get(search_file.name, [])
+            records = shelf['records'].get(search_file.name, [])
             records.extend(get_records_from_api(Discovery_records))
 
             individual_records_with_lineage, updated_records = get_record_ids_from_api_with_catalogue_lineage(Discovery_records, records)
