@@ -209,11 +209,11 @@ if __name__ == "__main__":
                 print(f"{search_file.name} must be xlsx or txt")
                 continue
 
-            records = shelf['records'].get(search_file.name, [])
-            records.extend(get_records_from_api(Discovery_records))
+            TNA_records = shelf['records'].get(search_file.name, [])
+            TNA_records.extend(get_records_from_api(Discovery_records))
 
-            individual_records_with_lineage, updated_records = get_record_ids_from_api_with_catalogue_lineage(Discovery_records, records)
-            records.extend(updated_records)
+            individual_records_with_lineage, updated_records = get_record_ids_from_api_with_catalogue_lineage(Discovery_records, TNA_records)
+            TNA_records.extend(updated_records)
             add_record_ids_to_taxonomy(TNA_taxonomy, individual_records_with_lineage)
 
             shutil.move(search_file, DATA.ARCHIVE / search_file.name)
