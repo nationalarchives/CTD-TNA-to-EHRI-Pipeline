@@ -20,6 +20,17 @@ from constants import DISCOVERY_API_URI, PAUSE_IN_SECONDS, PAGE_SIZE, DATA
 pretty = pprint.PrettyPrinter(indent=4)
 
 
+
+def touch_db():
+    with shelve.open(DATA.CACHE, "c") as shelf:
+        if 'taxonomy' not in shelf:
+            TNA_taxonomy = Tree()
+            TNA_taxonomy.create_node("Catalogue", "root") 
+            shelf['taxonomy'] = TNA_taxonomy
+        if 'records' not in shelf:
+            shelf['records'] = {}
+
+
 @lru_cache
 def get_api_record(record_id: str) -> dict | None:
     api_query = f"{DISCOVERY_API_URI}/records/v1/details/{record_id}"
