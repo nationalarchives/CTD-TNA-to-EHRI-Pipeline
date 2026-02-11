@@ -209,7 +209,7 @@ if __name__ == "__main__":
                 print(f"{search_file.name} must be xlsx or txt")
                 continue
 
-            if search_file.name not in shelf:
+            if search_file.name not in TNA_records:
                 shelf[search_file.name] = []
 
             records_for_EHRI: list[dict] = get_records_from_api(Discovery_records)
