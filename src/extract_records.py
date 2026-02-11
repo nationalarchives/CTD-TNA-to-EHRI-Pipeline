@@ -104,8 +104,8 @@ def get_api_record(record_id: str) -> dict | None:
     return record
 
 
-def get_record_from_local_cache(local_cache: dict, record_id: str) -> dict | None:
-    if local_record := [record for record in local_cache['shelf'][local_cache['filename']] if record['id'] == record_id]:
+def get_record_from_local_cache(local_cache: list[dict], record_id: str) -> dict | None:
+    if local_record := [record for record in local_cache if record['id'] == record_id]:
         print(f"\t\tLOCAL record retrieved: {record_id}")
         return local_record[0]
     return
