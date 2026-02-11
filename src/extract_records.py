@@ -189,6 +189,7 @@ if __name__ == "__main__":
         print("Invalid location for series.txt")
         exit()
 
+    touch_db()
 
     with shelve.open(DATA.CACHE, "c") as shelf:
         if 'TNA taxonomy' not in shelf:
