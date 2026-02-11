@@ -9,7 +9,7 @@ class DataFolders():
 
     _root = Path(r"C:\Users\rbruno\OneDrive - The National Archives\Projects\EHRI\Data\Pipeline")
     INPUT = _root / "1-INPUT"
-    CACHE = _root / "2-CACHE/TNA_records_lineage.db"
+    CACHE = _root / "2-CACHE/TNA.db"
     TRANSFORM = _root / "3-TRANSFORM"
     ARCHIVE = _root / "4-ARCHIVE"
     OUTPUT = _root / "5-OUTPUT"
