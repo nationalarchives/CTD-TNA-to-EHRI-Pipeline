@@ -111,7 +111,7 @@ def get_record_from_local_cache(local_cache: list[dict], record_id: str) -> dict
     return
 
 
-def get_record_ids_from_api_with_catalogue_lineage(candidate_records: list[dict], local_cache: dict) -> list[list[str]]:
+def get_record_ids_from_api_with_catalogue_lineage(candidate_records: list[dict], local_cache: list[dict]) -> list:
     records_by_lineage = []
     num_records = 0
     print("Retrieving record lineage:")
@@ -123,7 +123,7 @@ def get_record_ids_from_api_with_catalogue_lineage(candidate_records: list[dict]
                 lineage.append(record_id)
             elif record := get_api_record(record_id):
                 lineage.append(record_id)
-                local_cache['shelf'][local_cache['filename']].append(record)
+                local_cache.append(record)
             else:
                 continue
 
