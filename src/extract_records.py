@@ -31,6 +31,16 @@ def touch_db() -> None:
             shelf['records'] = {}
 
 
+def load_data_from_search_file(search_file) -> list[dict]:
+    if search_file.suffix == ".xlsx":
+        print(f"Processing file: {search_file.name}")
+        return read_records_from_file(search_file)
+
+    elif search_file.suffix == ".txt":           
+        print(f"Processing file: {search_file.name}")
+        return get_series_from_api(search_file.stem)
+
+
 @lru_cache
 def get_api_record(record_id: str) -> dict | None:
     api_query = f"{DISCOVERY_API_URI}/records/v1/details/{record_id}"
@@ -196,15 +206,7 @@ if __name__ == "__main__":
         TNA_records = shelf['records']
 
         for search_file in Path(F"{DATA.INPUT}").glob("*.*"):
-            if search_file.suffix == ".xlsx":
-                print(f"Processing file: {search_file.name}")
-                Discovery_records: list[dict] = read_records_from_file(search_file)
-
-            elif search_file.suffix == ".txt":           
-                print(f"Processing file: {search_file.name}")
-                Discovery_records: list[dict] = get_series_from_api(search_file.stem)
-
-            else:
+            if not (Discovery_records := load_data_from_search_file(search_file)):
                 print(f"{search_file.name} must be xlsx or txt")
                 continue
 
