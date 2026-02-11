@@ -30,36 +30,6 @@ def touch_db() -> None:
             shelf['records'] = {}
 
 
-def load_data_from_search_file(search_file) -> list[dict]:
-    if search_file.suffix == ".xlsx":
-        print(f"Processing file: {search_file.name}")
-        return read_records_from_file(search_file)
-
-    elif search_file.suffix == ".txt":           
-        print(f"Processing file: {search_file.name}")
-        return get_series_from_api(search_file.stem)
-
-
-@lru_cache
-def get_api_record(record_id: str) -> dict | None:
-    api_query = f"{DISCOVERY_API_URI}/records/v1/details/{record_id}"
-    result = requests.get(api_query)
-    if result.status_code == 204:
-        print(f"ERROR: Record not found - incorrect record ID {record_id}")
-        return
-
-    record = result.json()
-    print(f"\t\tAPI Record retrieved: {record_id}")
-    return record
-
-
-def get_record_from_local_cache(local_cache: dict, record_id: str) -> dict | None:
-    if local_record := [record for record in local_cache['shelf'][local_cache['filename']] if record['id'] == record_id]:
-        print(f"\t\tLOCAL record retrieved: {record_id}")
-        return local_record[0]
-    return
-
-
 def get_series_from_api(series: str) -> list[dict]:
     """
     Queries the Discovery API for all the records in the given series, in order, 
@@ -109,6 +79,36 @@ def read_records_from_file(excel_file: Path) -> list[dict]:
         for row in data_rows[1:]
         if row[1]
     ]
+
+
+def load_data_from_search_file(search_file) -> list[dict]:
+    if search_file.suffix == ".xlsx":
+        print(f"Processing file: {search_file.name}")
+        return read_records_from_file(search_file)
+
+    elif search_file.suffix == ".txt":           
+        print(f"Processing file: {search_file.name}")
+        return get_series_from_api(search_file.stem)
+
+
+@lru_cache
+def get_api_record(record_id: str) -> dict | None:
+    api_query = f"{DISCOVERY_API_URI}/records/v1/details/{record_id}"
+    result = requests.get(api_query)
+    if result.status_code == 204:
+        print(f"ERROR: Record not found - incorrect record ID {record_id}")
+        return
+
+    record = result.json()
+    print(f"\t\tAPI Record retrieved: {record_id}")
+    return record
+
+
+def get_record_from_local_cache(local_cache: dict, record_id: str) -> dict | None:
+    if local_record := [record for record in local_cache['shelf'][local_cache['filename']] if record['id'] == record_id]:
+        print(f"\t\tLOCAL record retrieved: {record_id}")
+        return local_record[0]
+    return
 
 
 def get_record_ids_from_api_with_catalogue_lineage(candidate_records: list[dict], local_cache: dict) -> list[list[str]]:
