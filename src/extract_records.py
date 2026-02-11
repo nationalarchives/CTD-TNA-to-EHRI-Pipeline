@@ -20,7 +20,6 @@ from constants import DISCOVERY_API_URI, PAUSE_IN_SECONDS, PAGE_SIZE, DATA
 pretty = pprint.PrettyPrinter(indent=4)
 
 
-
 def touch_db() -> None:
     with shelve.open(DATA.CACHE, "c") as shelf:
         if 'taxonomy' not in shelf:
