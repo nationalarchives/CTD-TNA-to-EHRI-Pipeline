@@ -191,9 +191,6 @@ def add_record_ids_to_taxonomy(taxonomy: Tree, lineage_items: list[list[str]]) -
     
 
 if __name__ == "__main__":
-    import pprint
-
-    pretty_output = pprint.PrettyPrinter(indent=4)
     if not Path(DATA.INPUT):
         print("Invalid location for series.txt")
         exit()
