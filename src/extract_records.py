@@ -192,12 +192,8 @@ if __name__ == "__main__":
     touch_db()
 
     with shelve.open(DATA.CACHE, "c") as shelf:
-        if 'TNA taxonomy' not in shelf:
-            TNA_taxonomy = Tree()
-            TNA_taxonomy.create_node("TNA Catalogue", "root") 
-            shelf['TNA taxonomy'] = TNA_taxonomy
-        else:
-            TNA_taxonomy = shelf['TNA taxonomy']
+        TNA_taxonomy = shelf['taxonomy']
+        TNA_records = shelf['records']
 
         for search_file in Path(F"{DATA.INPUT}").glob("*.*"):
             if search_file.suffix == ".xlsx":
