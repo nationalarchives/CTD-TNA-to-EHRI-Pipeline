@@ -21,7 +21,7 @@ pretty = pprint.PrettyPrinter(indent=4)
 
 
 
-def touch_db():
+def touch_db() -> None:
     with shelve.open(DATA.CACHE, "c") as shelf:
         if 'taxonomy' not in shelf:
             TNA_taxonomy = Tree()
