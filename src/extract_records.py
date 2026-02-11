@@ -213,6 +213,12 @@ with shelve.open(DATA.CACHE, "c") as shelf:
     shelf['TNA taxonomy'] = TNA_taxonomy
 
     TNA_taxonomy.show() 
-    
+
+    # for page in all_records:
+    #     for record in page:
+    #         # pretty.pprint(page)
+    #         # for record in page:
+    #         print(f"{record['id']=}\t{record['scopeContent']['schema']}")
+
     print("Processing complete.")
 
