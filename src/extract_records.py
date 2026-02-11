@@ -11,10 +11,13 @@ import shelve
 from treelib import Tree
 import shutil
 from functools import lru_cache
+import pprint
 
 from xlreader import read_file
 
 from constants import DISCOVERY_API_URI, PAUSE_IN_SECONDS, PAGE_SIZE, DATA
+
+pretty = pprint.PrettyPrinter(indent=4)
 
 
 @lru_cache
@@ -176,38 +179,38 @@ if __name__ == "__main__":
         exit()
 
 
-    with shelve.open(DATA.CACHE, "c") as shelf:
-        if 'TNA taxonomy' not in shelf:
-            TNA_taxonomy = Tree()
-            TNA_taxonomy.create_node("TNA Catalogue", "root") 
-            shelf['TNA taxonomy'] = TNA_taxonomy
-        else:
-            TNA_taxonomy = shelf['TNA taxonomy']
-
-        for search_file in Path(F"{DATA.INPUT}").glob("*.*"):
-            if search_file.suffix == ".xlsx":
-                print(f"Processing file: {search_file.name}")
-                Discovery_records: list[dict] = read_records_from_file(search_file)
-
-            elif search_file.suffix == ".txt":           
-                print(f"Processing file: {search_file.name}")
-                Discovery_records: list[dict] = get_series_from_api(search_file.stem)
-
-            else:
-                print(f"{search_file.name} must be xlsx or txt")
-                continue
-
-            if search_file.name not in shelf:
-                shelf[search_file.name] = []
-
-            # records_for_EHRI: list[dict] = get_records_from_api(Discovery_records)
-            local_records_cache: dict = {'shelf': shelf, 'filename': search_file.name}
-            individual_records_with_lineage: list[list[str]] = get_record_ids_from_api_with_catalogue_lineage(Discovery_records, local_records_cache)
-            add_record_ids_to_taxonomy(TNA_taxonomy, individual_records_with_lineage)
-
-            shutil.move(search_file, DATA.ARCHIVE / search_file.name)
-
+with shelve.open(DATA.CACHE, "c") as shelf:
+    if 'TNA taxonomy' not in shelf:
+        TNA_taxonomy = Tree()
+        TNA_taxonomy.create_node("TNA Catalogue", "root") 
         shelf['TNA taxonomy'] = TNA_taxonomy
+    else:
+        TNA_taxonomy = shelf['TNA taxonomy']
+
+    for search_file in Path(F"{DATA.INPUT}").glob("*.*"):
+        if search_file.suffix == ".xlsx":
+            print(f"Processing file: {search_file.name}")
+            Discovery_records: list[dict] = read_records_from_file(search_file)
+
+        elif search_file.suffix == ".txt":           
+            print(f"Processing file: {search_file.name}")
+            Discovery_records: list[dict] = get_series_from_api(search_file.stem)
+
+        else:
+            print(f"{search_file.name} must be xlsx or txt")
+            continue
+
+        if search_file.name not in shelf:
+            shelf[search_file.name] = []
+
+        records_for_EHRI: list[dict] = get_records_from_api(Discovery_records)
+        local_records_cache: dict = {'shelf': shelf, 'filename': search_file.name}
+        individual_records_with_lineage: list[list[str]] = get_record_ids_from_api_with_catalogue_lineage(Discovery_records, local_records_cache)
+        add_record_ids_to_taxonomy(TNA_taxonomy, individual_records_with_lineage)
+
+        shutil.move(search_file, DATA.ARCHIVE / search_file.name)
+
+    shelf['TNA taxonomy'] = TNA_taxonomy
 
     TNA_taxonomy.show() 
     
