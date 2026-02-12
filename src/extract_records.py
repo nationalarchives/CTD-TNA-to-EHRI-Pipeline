@@ -12,6 +12,7 @@ from treelib import Tree
 import shutil
 from functools import lru_cache
 import pprint
+from typing import Generator, Iterator
 
 from xlreader import read_file
 
@@ -189,11 +190,12 @@ if __name__ == "__main__":
                 print(f"{search_file.name} must be xlsx or txt")
                 continue
 
-            file_records: dict = get_records_from_api(Discovery_records)
-            cached_records.update(file_records)
+            total_candidate_records = len(candidate_records)
+            candidate_records = convert_records_to_generator(candidate_records)          
+            records_with_lineage, new_records = get_records_with_lineage(candidate_records, total_candidate_records, cached_records)          
 
-            individual_records_with_lineage, cached_records = get_record_ids_from_api_with_catalogue_lineage(Discovery_records, cached_records)
-            cached_taxonomy = add_record_ids_to_taxonomy(cached_taxonomy, individual_records_with_lineage)
+            cached_taxonomy = add_record_ids_to_taxonomy(cached_taxonomy, records_with_lineage)
+            cached_records.update(new_records)
 
             print(f"{len(cached_records)=}")
             shutil.move(search_file, DATA.ARCHIVE / search_file.name)
