@@ -20,12 +20,12 @@ from constants import DISCOVERY_API_URI, PAUSE_IN_SECONDS, PAGE_SIZE, DATA
 pretty = pprint.PrettyPrinter(indent=4)
 
 
-def touch_db() -> None:
+def touch_cache() -> None:
     with shelve.open(DATA.CACHE, "c") as shelf:
         if 'taxonomy' not in shelf:
-            TNA_taxonomy = Tree()
-            TNA_taxonomy.create_node("Catalogue", "root") 
-            shelf['taxonomy'] = TNA_taxonomy
+            taxonomy = Tree()
+            taxonomy.create_node("Catalogue", "root") 
+            shelf['taxonomy'] = taxonomy
         if 'records' not in shelf:
             shelf['records'] = {}
 
@@ -189,29 +189,29 @@ if __name__ == "__main__":
         print("Invalid location for series.txt")
         exit()
 
-    touch_db()
+    touch_cache()
 
     with shelve.open(DATA.CACHE, "c") as shelf:
-        TNA_taxonomy = shelf['taxonomy']
+        cached_taxonomy = shelf['taxonomy']
 
         for search_file in Path(F"{DATA.INPUT}").glob("*.*"):
             if not (Discovery_records := load_data_from_search_file(search_file)):
                 print(f"{search_file.name} must be xlsx or txt")
                 continue
 
-            TNA_records = shelf['records'].get(search_file.name, [])
-            TNA_records.extend(get_records_from_api(Discovery_records))
+            cached_records = shelf['records'].get(search_file.name, [])
+            cached_records.extend(get_records_from_api(Discovery_records))
 
-            individual_records_with_lineage, updated_records = get_record_ids_from_api_with_catalogue_lineage(Discovery_records, TNA_records)
-            TNA_records.extend(updated_records)
-            TNA_taxonomy = add_record_ids_to_taxonomy(TNA_taxonomy, individual_records_with_lineage)
+            individual_records_with_lineage, updated_records = get_record_ids_from_api_with_catalogue_lineage(Discovery_records, cached_records)
+            cached_records.extend(updated_records)
+            cached_taxonomy = add_record_ids_to_taxonomy(cached_taxonomy, individual_records_with_lineage)
 
-            shelf['records'][search_file.name] = TNA_records
-            shelf['taxonomy'] = TNA_taxonomy
+            shelf['records'][search_file.name] = cached_records
+            shelf['taxonomy'] = cached_taxonomy
 
             shutil.move(search_file, DATA.ARCHIVE / search_file.name)
 
-        TNA_taxonomy.show() 
+        cached_taxonomy.show() 
 
         # for page in all_records:
         #     for record in page:
