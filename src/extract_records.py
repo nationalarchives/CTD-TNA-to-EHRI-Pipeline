@@ -185,7 +185,7 @@ if __name__ == "__main__":
         cached_records = shelf['records']
 
         for search_file in Path(F"{DATA.INPUT}").glob("*.*"):
-            if not (Discovery_records := load_data_from_search_file(search_file)):
+            if not (candidate_records := load_data_from_search_file(search_file)):
                 print(f"{search_file.name} must be xlsx or txt")
                 continue
 
