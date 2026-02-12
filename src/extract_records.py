@@ -100,7 +100,7 @@ def get_api_record(record_id: str) -> dict | None:
         return
 
     record = result.json()
-    print(f"\t\tAPI Record retrieved: {record_id}")
+    print(f"{'.'*20}Record {record_id} retrieved from API")
     return record
 
 
@@ -157,7 +157,7 @@ def get_records_from_api(candidate_records: list[dict]) -> dict:
         record_id = candidate['id'] if 'id' in candidate else candidate['ID']
         
         if record := get_api_record(record_id):
-            print(f"\tRetrieving record {index + 1} of {len(candidate_records)}: {record_id}")
+            print(f"\tRetrieving record {index + 1} of {len(candidate_records)}", end=": ")
             records_retrieved[record_id] = record
             total_records_retrieved += 1
         else:
