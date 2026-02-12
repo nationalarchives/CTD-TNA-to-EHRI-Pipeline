@@ -53,7 +53,10 @@ def get_series_from_api(series: str) -> list[dict]:
         data = result.json()          
         records.extend(data['records'])
         batch_mark = data['nextBatchMark']
-        sleep(PAUSE_IN_SECONDS)
+
+        reached_end_of_page = ((len(records)) % PAGE_SIZE == 0)
+        if reached_end_of_page: 
+            sleep(PAUSE_IN_SECONDS)
         
     print(f"\tResult: {len(records)} records retrieved.")
 
