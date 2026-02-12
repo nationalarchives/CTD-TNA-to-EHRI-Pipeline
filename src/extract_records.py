@@ -206,10 +206,10 @@ if __name__ == "__main__":
             TNA_records.extend(updated_records)
             TNA_taxonomy = add_record_ids_to_taxonomy(TNA_taxonomy, individual_records_with_lineage)
 
-            shutil.move(search_file, DATA.ARCHIVE / search_file.name)
-
             shelf['records'][search_file.name] = TNA_records
             shelf['taxonomy'] = TNA_taxonomy
+
+            shutil.move(search_file, DATA.ARCHIVE / search_file.name)
 
         TNA_taxonomy.show() 
 
