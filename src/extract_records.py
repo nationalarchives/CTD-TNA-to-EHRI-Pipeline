@@ -193,22 +193,20 @@ if __name__ == "__main__":
 
     with shelve.open(DATA.CACHE, "c") as shelf:
         cached_taxonomy = shelf['taxonomy']
+        cached_records = shelf['records']
 
         for search_file in Path(F"{DATA.INPUT}").glob("*.*"):
             if not (Discovery_records := load_data_from_search_file(search_file)):
                 print(f"{search_file.name} must be xlsx or txt")
                 continue
 
-            cached_records = shelf['records'].get(search_file.name, [])
-            cached_records.extend(get_records_from_api(Discovery_records))
+            file_records: dict = get_records_from_api(Discovery_records)
+            cached_records.update(file_records)
 
-            individual_records_with_lineage, updated_records = get_record_ids_from_api_with_catalogue_lineage(Discovery_records, cached_records)
-            cached_records.extend(updated_records)
+            individual_records_with_lineage, cached_records = get_record_ids_from_api_with_catalogue_lineage(Discovery_records, cached_records)
             cached_taxonomy = add_record_ids_to_taxonomy(cached_taxonomy, individual_records_with_lineage)
 
-            shelf['records'][search_file.name] = cached_records
-            shelf['taxonomy'] = cached_taxonomy
-
+            print(f"{len(cached_records)=}")
             shutil.move(search_file, DATA.ARCHIVE / search_file.name)
 
         cached_taxonomy.show() 
