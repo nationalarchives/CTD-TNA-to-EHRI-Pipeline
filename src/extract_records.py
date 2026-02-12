@@ -108,7 +108,6 @@ def get_api_record(record_id: str) -> dict | None:
         return
 
     record = result.json()
-    print(f"{'.'*20}Record {record_id} retrieved from API")
     return record
 
 
