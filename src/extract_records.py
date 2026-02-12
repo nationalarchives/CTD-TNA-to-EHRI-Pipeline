@@ -94,6 +94,11 @@ def load_data_from_search_file(search_file) -> list[dict]:
         return get_series_from_api(search_file.stem)
 
 
+def convert_records_to_generator(candidate_records: list[dict]) -> Generator[dict, None, None]:
+    for row in candidate_records:
+        yield row
+
+
 @lru_cache
 def get_api_record(record_id: str) -> dict | None:
     api_query = f"{DISCOVERY_API_URI}/records/v1/details/{record_id}"
