@@ -142,23 +142,23 @@ def get_record_ids_from_api_with_catalogue_lineage(candidate_records: list[dict]
     return (records_by_lineage, local_cache)
 
 
-def get_records_from_api(candidate_records: list[dict]) -> list[dict]: 
+def get_records_from_api(candidate_records: list[dict]) -> dict: 
     """
     Uses list of records proposed for EHRI transfer and retrieves the full JSON records from Discovery.
 
     Args:
         candidate_records (list[dict]): rows of data extracted from Excel
     Returns:
-        records_retrieved (list[dict]): Discovery JSON records 
+        records_retrieved (dict): Discovery JSON records with record's id value mapped to the full record
     """
-    records_retrieved = []
+    records_retrieved = {}
     total_records_retrieved = 0
     for index, candidate in enumerate(candidate_records):
         record_id = candidate['id'] if 'id' in candidate else candidate['ID']
         
         if record := get_api_record(record_id):
             print(f"\tRetrieving record {index + 1} of {len(candidate_records)}: {record_id}")
-            records_retrieved.append(record)
+            records_retrieved[record_id] = record
             total_records_retrieved += 1
         else:
             continue
