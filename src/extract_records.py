@@ -173,13 +173,15 @@ def get_records_from_api(candidate_records: list[dict]) -> list[dict]:
     return records_retrieved
        
 
-def add_record_ids_to_taxonomy(taxonomy: Tree, lineage_items: list[list[str]]) -> None:
+def add_record_ids_to_taxonomy(taxonomy: Tree, lineage_items: list[list[str]]) -> Tree:
 
     for lineage in lineage_items:
         for index, record_id in enumerate(lineage):
             current_parent = lineage[index - 1] if index > 0 else "root"
             if record_id not in taxonomy:
                 taxonomy.create_node(record_id, record_id, parent=current_parent)
+
+    return taxonomy
     
 
 if __name__ == "__main__":
@@ -202,7 +204,7 @@ if __name__ == "__main__":
 
             individual_records_with_lineage, updated_records = get_record_ids_from_api_with_catalogue_lineage(Discovery_records, TNA_records)
             TNA_records.extend(updated_records)
-            add_record_ids_to_taxonomy(TNA_taxonomy, individual_records_with_lineage)
+            TNA_taxonomy = add_record_ids_to_taxonomy(TNA_taxonomy, individual_records_with_lineage)
 
             shutil.move(search_file, DATA.ARCHIVE / search_file.name)
 
