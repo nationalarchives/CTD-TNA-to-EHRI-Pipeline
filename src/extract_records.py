@@ -209,6 +209,8 @@ if __name__ == "__main__":
             print(f"{len(cached_records)=}")
             shutil.move(search_file, DATA.ARCHIVE / search_file.name)
 
+        shelf['taxonomy'] = cached_taxonomy
+        shelf['records'] = cached_records
         cached_taxonomy.show() 
 
         # for page in all_records:
