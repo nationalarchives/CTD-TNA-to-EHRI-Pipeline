@@ -119,67 +119,49 @@ def get_record_from_local_cache(local_cache: list[dict], record_id: str) -> dict
     return
 
 
-def get_record_ids_from_api_with_catalogue_lineage(candidate_records: list[dict], records_cache: dict) -> tuple[list, dict]:
+def get_records_with_lineage(candidate_records: Iterator[dict], total_candidates: int, records_cache: dict) -> tuple[list, dict]:
+    new_records_retrieved = {}
     records_by_lineage = []
-    num_records = 0
-    print("Retrieving record lineage:")
-    for candidate in candidate_records:
-        lineage = []
+    total_candidates_processed = 0
+
+    for index, candidate in enumerate(candidate_records, start=1):
         record_id = candidate['id'] if 'id' in candidate else candidate['ID']
+        lineage = []
+
+        print(f"{'='*4}processing candidate {index} of {total_candidates}")
         while True:
             if record := records_cache.get(record_id, None):
+                print(f"{' '*4}{'.'*20}record {record_id} retrieved from cache")
                 lineage.append(record_id)
+
+            elif record := new_records_retrieved.get(record_id, None):
+                print(f"{' '*4}{'.'*20}record {record_id} retrieved this session")
+                lineage.append(record_id)
+
             elif record := get_api_record(record_id):
                 lineage.append(record_id)
-                records_cache[record_id] = record
+                print(f"{' '*4}{'.'*20}record {record_id} retrieved from API")
+                new_records_retrieved[record_id] = record                
+
             else:
                 continue
 
-            num_records += 1
             if record['catalogueLevel'] == 1:
+                total_candidates_processed += 1
                 break
-
             record_id = record['parentId']
 
-        sleep(PAUSE_IN_SECONDS)
-        print(f"\tLineage for candidate {lineage[0]}: {lineage[1:]}")
-        records_by_lineage.append(lineage[::-1])  # reverse order to have top-level first
-        
-    print(f"\tTotal records retrieved: {num_records}\n")
-    
-    return (records_by_lineage, records_cache)
-
-
-def get_records_from_api(candidate_records: list[dict]) -> dict: 
-    """
-    Uses list of records proposed for EHRI transfer and retrieves the full JSON records from Discovery.
-
-    Args:
-        candidate_records (list[dict]): rows of data extracted from Excel
-    Returns:
-        records_retrieved (dict): Discovery JSON records with record's id value mapped to the full record
-    """
-    records_retrieved = {}
-    total_records_retrieved = 0
-    for index, candidate in enumerate(candidate_records):
-        record_id = candidate['id'] if 'id' in candidate else candidate['ID']
-        
-        if record := get_api_record(record_id):
-            print(f"\tRetrieving record {index + 1} of {len(candidate_records)}", end=": ")
-            records_retrieved[record_id] = record
-            total_records_retrieved += 1
-        else:
-            continue
-
-        reached_end_of_page = ((index + 1) % PAGE_SIZE == 0)
-
+        reached_end_of_page = ((index) % PAGE_SIZE == 0)
         if reached_end_of_page: 
             sleep(PAUSE_IN_SECONDS)
 
-    print(f"-> Total records retrieved: {total_records_retrieved}\n")
+        print(f"{' '*54}Lineage for candidate {lineage[0]}: {lineage[1:]}")
+        records_by_lineage.append(lineage[::-1])  # reverse order to have top-level first
         
-    return records_retrieved
-       
+    print(f"\tTotal candidate records found and processed: {total_candidates_processed}\n")
+    
+    return (records_by_lineage, new_records_retrieved)
+
 
 def add_record_ids_to_taxonomy(taxonomy: Tree, lineage_items: list[list[str]]) -> Tree:
 
