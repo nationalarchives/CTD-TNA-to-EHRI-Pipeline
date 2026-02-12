@@ -190,6 +190,7 @@ if __name__ == "__main__":
                 print(f"{search_file.name} must be xlsx or txt")
                 continue
 
+            """ new process """
             total_candidate_records = len(candidate_records)
             candidate_records = convert_records_to_generator(candidate_records)          
             records_with_lineage, new_records = get_records_with_lineage(candidate_records, total_candidate_records, cached_records)          
