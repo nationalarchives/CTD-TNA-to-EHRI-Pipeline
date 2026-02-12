@@ -111,7 +111,7 @@ def get_record_from_local_cache(local_cache: list[dict], record_id: str) -> dict
     return
 
 
-def get_record_ids_from_api_with_catalogue_lineage(candidate_records: list[dict], local_cache: list[dict]) -> tuple[list, list]:
+def get_record_ids_from_api_with_catalogue_lineage(candidate_records: list[dict], records_cache: dict) -> tuple[list, dict]:
     records_by_lineage = []
     num_records = 0
     print("Retrieving record lineage:")
@@ -119,11 +119,11 @@ def get_record_ids_from_api_with_catalogue_lineage(candidate_records: list[dict]
         lineage = []
         record_id = candidate['id'] if 'id' in candidate else candidate['ID']
         while True:
-            if record := get_record_from_local_cache(local_cache, record_id):
+            if record := records_cache.get(record_id, None):
                 lineage.append(record_id)
             elif record := get_api_record(record_id):
                 lineage.append(record_id)
-                local_cache.append(record)
+                records_cache[record_id] = record
             else:
                 continue
 
@@ -139,7 +139,7 @@ def get_record_ids_from_api_with_catalogue_lineage(candidate_records: list[dict]
         
     print(f"\tTotal records retrieved: {num_records}\n")
     
-    return (records_by_lineage, local_cache)
+    return (records_by_lineage, records_cache)
 
 
 def get_records_from_api(candidate_records: list[dict]) -> dict: 
