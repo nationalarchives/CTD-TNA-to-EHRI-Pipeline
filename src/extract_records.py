@@ -85,7 +85,7 @@ def read_records_from_file(excel_file: Path) -> list[dict]:
     ]
 
 
-def load_data_from_search_file(search_file) -> list[dict]:
+def load_data_from_search_file(search_file: Path) -> list[dict]:
     if search_file.suffix == ".xlsx":
         print(f"Processing file: {search_file.name}")
         return read_records_from_file(search_file)
