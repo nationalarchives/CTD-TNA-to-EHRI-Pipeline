@@ -116,13 +116,6 @@ def get_api_record(record_id: str) -> dict | None:
         return
 
 
-def get_record_from_local_cache(local_cache: list[dict], record_id: str) -> dict | None:
-    if local_record := [record for record in local_cache if record['id'] == record_id]:
-        print(f"\t\tLOCAL record retrieved: {record_id}")
-        return local_record[0]
-    return
-
-
 def get_record_with_lineage(cached_records: dict, record_id: str, total_candidates_processed: int) -> tuple[dict, list, int]:
     new_records_retrieved = {}
     lineage = []
@@ -209,11 +202,6 @@ if __name__ == "__main__":
             shutil.move(search_file, DATA.ARCHIVE / search_file.name)
 
         shelf['taxonomy'].show() 
-        # for page in all_records:
-        #     for record in page:
-        #         # pretty.pprint(page)
-        #         # for record in page:
-        #         print(f"{record['id']=}\t{record['scopeContent']['schema']}")
 
         print("Processing complete.")
 
