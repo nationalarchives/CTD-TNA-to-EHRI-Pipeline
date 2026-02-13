@@ -119,59 +119,69 @@ def get_record_from_local_cache(local_cache: list[dict], record_id: str) -> dict
     return
 
 
-def get_records_with_lineage(candidate_records: Iterator[dict], total_candidates: int, records_cache: dict) -> tuple[list, dict]:
+def get_record_with_lineage(cached_records: dict, record_id: str, total_candidates_processed: int) -> tuple[dict, list, int]:
     new_records_retrieved = {}
-    records_by_lineage = []
+    lineage = []
+    while True:
+        if record := cached_records.get(record_id, None):
+            print(f"{' '*4}{'.'*20}record {record_id} retrieved from cache")
+            lineage.append(record_id)
+
+        elif record := new_records_retrieved.get(record_id, None):
+            print(f"{' '*4}{'.'*20}record {record_id} retrieved this session")
+            lineage.append(record_id)
+
+        elif record := get_api_record(record_id):
+            lineage.append(record_id)
+            print(f"{' '*4}{'.'*20}record {record_id} retrieved from API")
+            new_records_retrieved[record_id] = record                
+
+        else:
+            continue
+
+        if record['catalogueLevel'] == 1:
+            total_candidates_processed += 1
+            break
+        record_id = record['parentId']
+    
+    return new_records_retrieved, lineage, total_candidates_processed
+
+
+def add_lineage_to_taxonomy(taxonomy: Tree, lineage: list[str]) -> Tree:
+
+    for index, record_id in enumerate(lineage):
+        current_parent = lineage[index - 1] if index > 0 else "root"
+        if record_id not in taxonomy:
+            taxonomy.create_node(record_id, record_id, parent=current_parent)
+
+    return taxonomy
+
+
+def process_candidate_records(candidate_records: Iterator[dict], total_candidates: int, shelf: shelve) -> None:
     total_candidates_processed = 0
 
     for index, candidate in enumerate(candidate_records, start=1):
+        cached_taxonomy = shelf['taxonomy']
+        cached_records = shelf['records']
+
         record_id = candidate['id'] if 'id' in candidate else candidate['ID']
-        lineage = []
-
         print(f"{'='*4}processing candidate {index} of {total_candidates}")
-        while True:
-            if record := records_cache.get(record_id, None):
-                print(f"{' '*4}{'.'*20}record {record_id} retrieved from cache")
-                lineage.append(record_id)
 
-            elif record := new_records_retrieved.get(record_id, None):
-                print(f"{' '*4}{'.'*20}record {record_id} retrieved this session")
-                lineage.append(record_id)
-
-            elif record := get_api_record(record_id):
-                lineage.append(record_id)
-                print(f"{' '*4}{'.'*20}record {record_id} retrieved from API")
-                new_records_retrieved[record_id] = record                
-
-            else:
-                continue
-
-            if record['catalogueLevel'] == 1:
-                total_candidates_processed += 1
-                break
-            record_id = record['parentId']
+        new_records_retrieved, lineage, total_candidates_processed = get_record_with_lineage(cached_records, record_id, total_candidates_processed)
 
         reached_end_of_page = ((index) % PAGE_SIZE == 0)
         if reached_end_of_page: 
             sleep(PAUSE_IN_SECONDS)
 
         print(f"{' '*54}Lineage for candidate {lineage[0]}: {lineage[1:]}")
-        records_by_lineage.append(lineage[::-1])  # reverse order to have top-level first
         
+        cached_taxonomy = add_lineage_to_taxonomy(cached_taxonomy, lineage[::-1])
+        cached_records.update(new_records_retrieved)
+
+        shelf['taxonomy'] = cached_taxonomy
+        shelf['records'] = cached_records
+
     print(f"\tTotal candidate records found and processed: {total_candidates_processed}\n")
-    
-    return (records_by_lineage, new_records_retrieved)
-
-
-def add_record_ids_to_taxonomy(taxonomy: Tree, lineage_items: list[list[str]]) -> Tree:
-
-    for lineage in lineage_items:
-        for index, record_id in enumerate(lineage):
-            current_parent = lineage[index - 1] if index > 0 else "root"
-            if record_id not in taxonomy:
-                taxonomy.create_node(record_id, record_id, parent=current_parent)
-
-    return taxonomy
     
 
 if __name__ == "__main__":
