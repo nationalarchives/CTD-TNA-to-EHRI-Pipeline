@@ -192,8 +192,6 @@ if __name__ == "__main__":
     touch_cache()
 
     with shelve.open(DATA.CACHE, "c") as shelf:
-        cached_taxonomy = shelf['taxonomy']
-        cached_records = shelf['records']
 
         for search_file in Path(F"{DATA.INPUT}").glob("*.*"):
             if not (candidate_records := load_data_from_search_file(search_file)):
@@ -202,18 +200,11 @@ if __name__ == "__main__":
 
             total_candidate_records = len(candidate_records)
             candidate_records = convert_records_to_generator(candidate_records)          
-            records_with_lineage, new_records = get_records_with_lineage(candidate_records, total_candidate_records, cached_records)          
+            process_candidate_records(candidate_records, total_candidate_records, shelf)          
 
-            cached_taxonomy = add_record_ids_to_taxonomy(cached_taxonomy, records_with_lineage)
-            cached_records.update(new_records)
-
-            print(f"{len(cached_records)=}")
             shutil.move(search_file, DATA.ARCHIVE / search_file.name)
 
-        shelf['taxonomy'] = cached_taxonomy
-        shelf['records'] = cached_records
-        cached_taxonomy.show() 
-
+        shelf['taxonomy'].show() 
         # for page in all_records:
         #     for record in page:
         #         # pretty.pprint(page)
