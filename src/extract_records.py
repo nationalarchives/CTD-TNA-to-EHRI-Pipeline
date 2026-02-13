@@ -108,8 +108,12 @@ def get_api_record(record_id: str) -> dict | None:
         print(f"ERROR: Record not found - incorrect record ID {record_id}")
         return
 
-    record = result.json()
-    return record
+    try:
+        record = result.json()
+        return record
+    except requests.exceptions.JSONDecodeError as error:
+        print(f"ERROR: {record_id}: {error.msg} {error.doc} {error.pos}")
+        return
 
 
 def get_record_from_local_cache(local_cache: list[dict], record_id: str) -> dict | None:
