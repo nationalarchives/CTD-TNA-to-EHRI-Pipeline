@@ -36,4 +36,10 @@ def get_records_from_api(candidate_records: list[dict]) -> list[list[dict]]:
         
     return records_retrieved
        
+""" """
 
+for page in all_records:
+    for record in page:
+        # pretty.pprint(page)
+        # for record in page:
+        print(f"{record['id']=}\t{record['scopeContent']['schema']}")
