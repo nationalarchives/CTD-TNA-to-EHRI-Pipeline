@@ -14,7 +14,8 @@ with shelve.open(DATA.CACHE, "r") as shelf:
     schemas_found = set()
     for count, record in enumerate(shelf['records'].values(), start=1):
         if schema := record['scopeContent']['schema']:
-            schemas_found.add(schema)
+            schema_name = regex.match(schema)['schema_name']
+            schemas_found.add(schema_name)
             print(f"{count=:<5}{' '*15}{record['id']=}\t{schema=}")
 
     print(f"Total records in cache: {count=:<5}")
