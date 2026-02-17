@@ -1,10 +1,14 @@
 import shelve
 import pprint
+import re
 
 from constants import DATA
 
 
 pretty = pprint.PrettyPrinter(indent=4)
+
+
+regex = re.compile(r"""<colltype id="(?P<schema_name>.*?)">,<\/colltype>""")
 
 with shelve.open(DATA.CACHE, "r") as shelf:
     schemas_found = set()
