@@ -40,27 +40,19 @@ def add_schema_statistics_to_cache() -> None:
         shelf['schemas'] = current_schemas
         pretty.pprint(shelf['schemas'])
 
-def report_records_with_specific_schemas(schema_names: list[str]) -> None:
-    schemas_reported = set()
 
+def report_schema_statistics() -> None:
     with shelve.open(DATA.CACHE, "r") as shelf:
-        for record in shelf['records'].values():
-            if not (schema := record['scopeContent']['schema']):
-                continue
-
-            schema = record['scopeContent']['schema']
-            schema_name = regex.match(schema)['schema_name']
-            if schema_name not in schema_names or schema_name in schemas_reported:
-                continue      
+        for schema_name, record_ids in shelf['schemas'].items():
+            record = shelf['records'][record_ids[0]]
 
             with open(f"{record['id']}_{schema_name}.json", "a") as output:
                 print(f"{record['id']=}\t{schema_name=}")
                 json.dump(record, output, indent=4)
-            schemas_reported.add(schema_name)
 
 
 if __name__ == "__main__":
-    add_schema_statistics_to_cache()
-    # report_records_with_specific_schemas(schemas_found)
+    # add_schema_statistics_to_cache()
+    report_schema_statistics()
 
 
