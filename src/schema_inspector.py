@@ -12,7 +12,7 @@ pretty = pprint.PrettyPrinter(indent=4)
 regex = re.compile(r"""<colltype id="(?P<schema_name>.*?)">,<\/colltype>""")
 
 
-def report_schema_statistics() -> None:
+def report_schema_statistics() -> list:
     with shelve.open(DATA.CACHE, "r") as shelf:
         schemas_found = []
         for count, record in enumerate(shelf['records'].values(), start=1):
@@ -29,6 +29,8 @@ def report_schema_statistics() -> None:
             f"Schemmas found", end=': \n'
         )
         pretty.pprint(dict(counter))
+    
+    return list(counter.keys())
 
 
 def report_records_with_specific_schemas() -> None:
