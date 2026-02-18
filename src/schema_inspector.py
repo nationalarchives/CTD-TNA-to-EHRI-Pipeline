@@ -53,7 +53,7 @@ def report_records_with_specific_schemas(schema_names: list[str]) -> None:
 
 
 if __name__ == "__main__":
-    # report_schema_statistics()
-    report_records_with_specific_schemas()
+    schemas_found = report_schema_statistics()
+    report_records_with_specific_schemas(schemas_found)
 
 
