@@ -43,12 +43,13 @@ def report_records_with_specific_schemas(schema_names: list[str]) -> None:
 
             schema = record['scopeContent']['schema']
             schema_name = regex.match(schema)['schema_name']
-            if schema_name not in schemas_to_find:
+            if schema_name not in schema_names or schema_name in schemas_reported:
                 continue      
 
             with open(f"{record['id']}_{schema_name}.json", "a") as output:
                 print(f"{record['id']=}\t{schema_name=}")
                 json.dump(record, output, indent=4)
+            schemas_reported.add(schema_name)
 
 
 if __name__ == "__main__":
