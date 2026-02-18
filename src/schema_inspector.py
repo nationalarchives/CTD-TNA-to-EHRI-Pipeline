@@ -33,8 +33,8 @@ def report_schema_statistics() -> list:
     return list(counter.keys())
 
 
-def report_records_with_specific_schemas() -> None:
-    schemas_to_find = ["EdenPaper", "FOI", "Miscellaneous", ]
+def report_records_with_specific_schemas(schema_names: list[str]) -> None:
+    schemas_reported = set()
 
     with shelve.open(DATA.CACHE, "r") as shelf:
         for record in shelf['records'].values():
