@@ -8,7 +8,6 @@ from constants import DATA
 
 pretty = pprint.PrettyPrinter(indent=4)
 
-
 regex = re.compile(r"""<colltype id="(?P<schema_name>.*?)">,<\/colltype>""")
 
 
